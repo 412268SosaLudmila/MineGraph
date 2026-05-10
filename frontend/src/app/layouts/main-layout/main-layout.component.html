@@ -1,0 +1,9 @@
+<div class="layout-wrapper" [class.sidebar-collapsed]="sidebarCollapsed">
+  <mg-sidebar [collapsed]="sidebarCollapsed"></mg-sidebar>
+  <div class="layout-main">
+    <mg-navbar (toggleSidebar)="toggleSidebar()"></mg-navbar>
+    <main class="layout-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MineGraph — Trabajo Práctico Grupal N°2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: #fff;
+  }
+
+  /* ── Páginas ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm 22mm 18mm 22mm;
+    margin: 0 auto 8mm auto;
+    background: #fff;
+    position: relative;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: avoid; }
+
+  @media print {
+    body { margin: 0; }
+    .page {
+      margin: 0;
+      padding: 18mm 20mm 16mm 20mm;
+      box-shadow: none;
+    }
+  }
+
+  /* ── Carátula ── */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 297mm;
+    background: linear-gradient(160deg, #0f0c29, #302b63, #24243e);
+    color: #fff;
+    padding: 20mm;
+  }
+  .cover-logo {
+    font-size: 52pt;
+    margin-bottom: 8mm;
+    filter: drop-shadow(0 0 18px #6c63ff88);
+  }
+  .cover h1 {
+    font-size: 28pt;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #a78bfa;
+    margin-bottom: 4mm;
+  }
+  .cover h2 {
+    font-size: 13pt;
+    font-weight: 400;
+    color: #c4b5fd;
+    margin-bottom: 10mm;
+    line-height: 1.5;
+  }
+  .cover-divider {
+    width: 60mm;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #6c63ff, transparent);
+    margin: 6mm auto;
+  }
+  .cover-info {
+    font-size: 10.5pt;
+    color: #d1d5db;
+    line-height: 2;
+    margin-top: 6mm;
+  }
+  .cover-info strong { color: #a78bfa; }
+  .cover-badge {
+    margin-top: 10mm;
+    background: rgba(108,99,255,0.25);
+    border: 1px solid #6c63ff66;
+    border-radius: 8px;
+    padding: 4mm 10mm;
+    font-size: 10pt;
+    color: #c4b5fd;
+    letter-spacing: 1px;
+  }
+
+  /* ── Encabezado interior ── */
+  .page-header {
+    border-bottom: 2.5px solid #6c63ff;
+    padding-bottom: 3mm;
+    margin-bottom: 6mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .page-header .logo-small { font-size: 13pt; font-weight: 800; color: #6c63ff; }
+  .page-header .section-name { font-size: 8.5pt; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── Tipografía ── */
+  h2 {
+    font-size: 14pt;
+    color: #302b63;
+    font-weight: 700;
+    margin: 5mm 0 3mm 0;
+    padding-left: 3mm;
+    border-left: 4px solid #6c63ff;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #302b63;
+    font-weight: 700;
+    margin: 4mm 0 2mm 0;
+  }
+  p { line-height: 1.65; margin-bottom: 2.5mm; text-align: justify; }
+  ul { padding-left: 6mm; margin-bottom: 2.5mm; }
+  ul li { line-height: 1.7; margin-bottom: 1mm; }
+  strong { color: #302b63; }
+
+  /* ── Índice ── */
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 2.5mm 2mm;
+    border-bottom: 1px dotted #d1d5db;
+    font-size: 11pt;
+  }
+  .toc-item:hover { background: #f9f7ff; }
+  .toc-num { color: #6c63ff; font-weight: 700; min-width: 7mm; }
+  .toc-title { flex: 1; padding: 0 3mm; }
+  .toc-page { color: #9ca3af; font-size: 10pt; }
+  .toc-section {
+    font-size: 9pt;
+    color: #9ca3af;
+    padding: 1.5mm 2mm 1.5mm 10mm;
+    border-bottom: 1px dotted #e5e7eb;
+  }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 4mm 0;
+    font-size: 10pt;
+  }
+  th {
+    background: #302b63;
+    color: #fff;
+    padding: 2.5mm 3mm;
+    text-align: left;
+    font-size: 9.5pt;
+  }
+  td {
+    padding: 2mm 3mm;
+    border-bottom: 1px solid #e5e7eb;
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f5f3ff; }
+  td code, th code { font-family: 'Consolas', monospace; font-size: 9.5pt; }
+
+  /* ── Código Cypher ── */
+  .cypher-block {
+    background: #1e1b3a;
+    border-radius: 6px;
+    padding: 3.5mm 4.5mm;
+    margin: 2mm 0 3.5mm 0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #e2e8f0;
+    border-left: 3px solid #6c63ff;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .kw  { color: #c084fc; font-weight: bold; }   /* MATCH WHERE WITH RETURN */
+  .fn  { color: #67e8f9; }                        /* funciones */
+  .rel { color: #fbbf24; }                        /* relaciones */
+  .nd  { color: #86efac; }                        /* nodos */
+  .str { color: #f9a8d4; }                        /* strings */
+  .cm  { color: #6b7280; font-style: italic; }    /* comentarios */
+
+  /* ── Cajas de info ── */
+  .info-box {
+    border: 1px solid #c4b5fd;
+    background: #f5f3ff;
+    border-radius: 6px;
+    padding: 3mm 4mm;
+    margin: 3mm 0;
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+  .info-box .icon { font-size: 13pt; margin-right: 2mm; }
+  .warn-box {
+    border: 1px solid #fcd34d;
+    background: #fffbeb;
+    border-radius: 6px;
+    padding: 3mm 4mm;
+    margin: 3mm 0;
+    font-size: 10pt;
+    line-height: 1.6;
+  }
+
+  /* ── Nodos del grafo (visual) ── */
+  .graph-model {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4mm;
+    margin: 3mm 0;
+    justify-content: center;
+  }
+  .node-card {
+    border-radius: 8px;
+    padding: 3mm 5mm;
+    font-size: 9.5pt;
+    font-weight: 700;
+    text-align: center;
+    min-width: 28mm;
+    color: #fff;
+  }
+  .node-jugador  { background: #6c63ff; }
+  .node-clan     { background: #10b981; }
+  .node-evento   { background: #f59e0b; color: #1a1a2e; }
+  .node-region   { background: #ef4444; }
+
+  /* ── Relaciones (visual) ── */
+  .rel-row {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    margin: 1.5mm 0;
+    font-size: 9.5pt;
+  }
+  .rel-badge {
+    padding: 1mm 3mm;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 9pt;
+    white-space: nowrap;
+  }
+  .rel-amigo    { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .rel-enemigo  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .rel-comercio { background: #fef3c7; color: #78350f; border: 1px solid #fcd34d; }
+  .rel-clan     { background: #ede9fe; color: #4c1d95; border: 1px solid #c4b5fd; }
+  .rel-guerra   { background: #fce7f3; color: #831843; border: 1px solid #f9a8d4; }
+  .rel-aliado   { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
+  .rel-evento   { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+  .arrow { color: #9ca3af; font-size: 12pt; }
+
+  /* ── Pie de página ── */
+  .page-footer {
+    position: absolute;
+    bottom: 8mm;
+    left: 22mm;
+    right: 22mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #9ca3af;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 2mm;
+  }
+
+  /* ── Columnas ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .pros { }
+  .cons { }
+  .pros h3 { color: #065f46; }
+  .cons h3 { color: #991b1b; }
+  .pros li::marker { color: #10b981; }
+  .cons li::marker { color: #ef4444; }
+
+  /* ── Porcentaje barra ── */
+  .ai-item { margin: 2mm 0; font-size: 10pt; }
+  .ai-bar-bg { background: #e5e7eb; border-radius: 4px; height: 5px; margin-top: 1mm; }
+  .ai-bar { height: 5px; border-radius: 4px; background: linear-gradient(90deg, #6c63ff, #a78bfa); }
+
+  /* ── Contador stats ── */
+  .stats-row { display: flex; gap: 4mm; margin: 3mm 0; flex-wrap: wrap; }
+  .stat-card {
+    flex: 1;
+    min-width: 25mm;
+    background: #f5f3ff;
+    border: 1px solid #c4b5fd;
+    border-radius: 8px;
+    padding: 3mm;
+    text-align: center;
+  }
+  .stat-num { font-size: 16pt; font-weight: 800; color: #6c63ff; }
+  .stat-lbl { font-size: 8.5pt; color: #6b7280; }
+
+  .query-title {
+    font-weight: 700;
+    color: #302b63;
+    font-size: 10pt;
+    margin: 4mm 0 1mm 0;
+  }
+  .query-desc {
+    font-size: 9.5pt;
+    color: #4b5563;
+    margin-bottom: 1.5mm;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PÁGINA 1 — CARÁTULA                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-logo">⬡</div>
+    <h1>MINEGRAPH</h1>
+    <h2>Sistema de Análisis de Redes Sociales<br>en un Servidor Minecraft</h2>
+    <div class="cover-divider"></div>
+    <div class="cover-info">
+      <strong>Trabajo Práctico Grupal N° 2</strong><br>
+      Bases de Datos II<br><br>
+      <strong>Tecnología:</strong> Neo4j (Base de Datos de Grafos)<br>
+      <strong>Lenguaje:</strong> Java — Spring Boot 3 + Angular 17<br>
+    </div>
+    <div class="cover-badge">BASES DE DATOS II · 2025</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PÁGINA 2 — ÍNDICE + INTRODUCCIÓN                   -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-small">⬡ MineGraph</span>
+    <span class="section-name">Índice &amp; Introducción</span>
+  </div>
+
+  <h2>Índice</h2>
+  <div class="toc-item"><span class="toc-num">1</span><span class="toc-title">Introducción — Descripción del problema</span><span class="toc-page">2</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><span class="toc-title">Modelo de datos — Nodos, relaciones y propiedades</span><span class="toc-page">3</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><span class="toc-title">Consultas Cypher — Simples y complejas</span><span class="toc-page">3–4</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><span class="toc-title">Funcionalidad de la aplicación</span><span class="toc-page">4</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><span class="toc-title">Ventajas y desventajas frente a bases relacionales</span><span class="toc-page">5</span></div>
+  <div class="toc-item"><span class="toc-num">6</span><span class="toc-title">Uso de Inteligencia Artificial</span><span class="toc-page">5</span></div>
+  <div class="toc-item"><span class="toc-num">7</span><span class="toc-title">Conclusión</span><span class="toc-page">5</span></div>
+
+  <br>
+  <h2>1. Introducción</h2>
+  <p>
+    El presente trabajo práctico desarrolla <strong>MineGraph</strong>, un sistema web de análisis de redes sociales
+    aplicado a un servidor de videojuego Minecraft. El sistema permite visualizar y consultar las relaciones entre
+    jugadores: amistades, rivalidades, transacciones comerciales, pertenencia a clanes y participación en eventos.
+  </p>
+  <p>
+    Se eligió el área de <strong>juegos en línea y seguimiento de estado</strong> (ítem 6 del enunciado) como dominio
+    de aplicación, ya que presenta de forma natural el tipo de problema que las bases de datos de grafos resuelven mejor:
+    <em>entidades altamente interconectadas con relaciones de distintos tipos y propiedades propias</em>.
+  </p>
+
+  <h3>¿Por qué Neo4j?</h3>
+  <p>
+    En un servidor con cientos de jugadores, preguntas como <em>"¿quiénes son los amigos de mis amigos?"</em>
+    o <em>"¿cuál es el camino más corto entre dos jugadores?"</em> requieren recorrer relaciones en profundidad.
+    En una base de datos relacional esto se traduce en múltiples <strong>JOINs anidados</strong> que se vuelven
+    costosos a medida que crece la red. Neo4j almacena esas relaciones de forma nativa como parte del grafo,
+    permitiendo recorrerlas en tiempo constante independientemente del tamaño total de la base de datos.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">~800</div><div class="stat-lbl">Jugadores cargados</div></div>
+    <div class="stat-card"><div class="stat-num">15</div><div class="stat-lbl">Clanes</div></div>
+    <div class="stat-card"><div class="stat-num">+700</div><div class="stat-lbl">Relaciones sociales</div></div>
+    <div class="stat-card"><div class="stat-num">5</div><div class="stat-lbl">Tipos de nodos</div></div>
+    <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Tipos de relaciones</div></div>
+  </div>
+
+  <div class="page-footer">
+    <span>MineGraph — Trabajo Práctico Grupal N°2 · Bases de Datos II</span>
+    <span>Página 2</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PÁGINA 3 — MODELO DE DATOS + CONSULTAS (1-4)       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-small">⬡ MineGraph</span>
+    <span class="section-name">Modelo de Datos &amp; Consultas</span>
+  </div>
+
+  <h2>2. Modelo de Datos</h2>
+
+  <h3>Nodos (5 tipos)</h3>
+  <div class="graph-model">
+    <div class="node-card node-jugador">Jugador</div>
+    <div class="node-card node-clan">Clan</div>
+    <div class="node-card node-evento">Evento</div>
+    <div class="node-card node-region">Region</div>
+  </div>
+
+  <table>
+    <tr><th>Nodo</th><th>Propiedades destacadas</th></tr>
+    <tr><td><strong>Jugador</strong></td><td>nickname, nivel, experiencia, kills, muertes, monedas, reputacion, estadoOnline, horasJugadas, titulo</td></tr>
+    <tr><td><strong>Clan</strong></td><td>nombre, tag, ranking, riqueza, cantidadMiembros, victorias, derrotas, territoriosControlados, nivel</td></tr>
+    <tr><td><strong>Evento</strong></td><td>nombre, tipo, fecha, duracionMinutos, recompensa, participantes, ganador, activo</td></tr>
+    <tr><td><strong>Region</strong></td><td>nombre, tipo, peligrosidad, visitasTotal, coordX, coordZ, activa</td></tr>
+  </table>
+
+  <h3>Relaciones (7 tipos) — con propiedades en relaciones</h3>
+
+  <div class="rel-row"><span class="rel-badge rel-amigo">AMIGO_DE</span><span class="arrow">→</span><span>Jugador → Jugador &nbsp;|&nbsp; <em>sin propiedades adicionales</em></span></div>
+  <div class="rel-row"><span class="rel-badge rel-enemigo">ENEMIGO_DE</span><span class="arrow">→</span><span>Jugador → Jugador &nbsp;|&nbsp; <em>sin propiedades adicionales</em></span></div>
+  <div class="rel-row"><span class="rel-badge rel-comercio">COMERCIA_CON</span><span class="arrow">→</span><span>Jugador → Jugador &nbsp;|&nbsp; <strong>volumenTotal, cantidadTransacciones, ultimaFecha, itemMasComerciado</strong></span></div>
+  <div class="rel-row"><span class="rel-badge rel-clan">PERTENECE_A</span><span class="arrow">→</span><span>Jugador → Clan &nbsp;|&nbsp; <em>sin propiedades adicionales</em></span></div>
+  <div class="rel-row"><span class="rel-badge rel-aliado">ALIADO_DE</span><span class="arrow">→</span><span>Clan → Clan &nbsp;|&nbsp; <em>sin propiedades adicionales</em></span></div>
+  <div class="rel-row"><span class="rel-badge rel-guerra">EN_GUERRA_CON</span><span class="arrow">→</span><span>Clan → Clan &nbsp;|&nbsp; <strong>fechaInicio, motivo, bajas, activa</strong></span></div>
+  <div class="rel-row"><span class="rel-badge rel-evento">PARTICIPO_EN</span><span class="arrow">→</span><span>Jugador → Evento &nbsp;|&nbsp; <em>sin propiedades adicionales</em></span></div>
+
+  <div class="info-box" style="margin-top:3mm;">
+    <span class="icon">💡</span>
+    <strong>Ventaja sobre SQL:</strong> En Neo4j, las relaciones <em>COMERCIA_CON</em> y <em>EN_GUERRA_CON</em>
+    tienen propiedades propias (volumen, bajas, fecha). En una base relacional esto requeriría tablas intermedias
+    adicionales con claves foráneas, lo que complica las consultas.
+  </div>
+
+  <h2>3. Consultas Cypher</h2>
+
+  <div class="query-title">Consulta 1 — Jugadores online en este momento</div>
+  <div class="query-desc">Obtiene todos los jugadores cuyo estado actual es online.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador)</span>
+<span class="kw">WHERE</span> j.estadoOnline = <span class="kw">true</span>
+<span class="kw">RETURN</span> j.nickname, j.nivel, j.titulo</div>
+
+  <div class="query-title">Consulta 2 — Top jugadores PvP por ratio K/D</div>
+  <div class="query-desc">Calcula el ratio kills/muertes y ordena de mayor a menor. Solo considera jugadores que murieron al menos una vez.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador)</span>
+<span class="kw">WHERE</span> j.muertes &gt; 0
+<span class="kw">WITH</span> j, <span class="fn">toFloat</span>(j.kills) / <span class="fn">toFloat</span>(j.muertes) <span class="kw">AS</span> kd
+<span class="kw">ORDER BY</span> kd <span class="kw">DESC LIMIT</span> 10
+<span class="kw">OPTIONAL MATCH</span> <span class="nd">(j)</span>-<span class="rel">[:PERTENECE_A]</span>-><span class="nd">(clan:Clan)</span>
+<span class="kw">RETURN</span> j.nickname, kd, clan.nombre</div>
+
+  <div class="query-title">Consulta 3 — Top comerciantes por volumen total</div>
+  <div class="query-desc">Suma el volumen de todas las relaciones COMERCIA_CON de cada jugador.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador)</span>-<span class="rel">[r:COMERCIA_CON]</span>-><span class="nd">(:Jugador)</span>
+<span class="kw">WITH</span> j, <span class="fn">SUM</span>(r.volumenTotal) <span class="kw">AS</span> volumen
+<span class="kw">ORDER BY</span> volumen <span class="kw">DESC LIMIT</span> 10
+<span class="kw">RETURN</span> j.nickname, volumen</div>
+
+  <div class="query-title">Consulta 4 — Clanes dominantes (fórmula de poder)</div>
+  <div class="query-desc">Calcula el poder de cada clan combinando riqueza, cantidad de miembros y victorias con pesos distintos.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(c:Clan)</span>
+<span class="kw">WITH</span> c, (c.riqueza * 0.4 + c.cantidadMiembros * 100 + c.victorias * 50) <span class="kw">AS</span> poder
+<span class="kw">ORDER BY</span> poder <span class="kw">DESC LIMIT</span> 10
+<span class="kw">RETURN</span> c.nombre, c.tag, poder</div>
+
+  <div class="page-footer">
+    <span>MineGraph — Trabajo Práctico Grupal N°2 · Bases de Datos II</span>
+    <span>Página 3</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PÁGINA 4 — CONSULTAS (5-8) + RECORRIDOS            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-small">⬡ MineGraph</span>
+    <span class="section-name">Consultas Cypher (cont.) &amp; Funcionalidad</span>
+  </div>
+
+  <div class="query-title">Consulta 5 — Jugadores más influyentes</div>
+  <div class="query-desc">Cuenta cuántas veces un jugador es mencionado en relaciones entrantes (amigos que lo eligen, socios que comercian con él).</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador)</span>
+<span class="kw">OPTIONAL MATCH</span> <span class="nd">()</span>-<span class="rel">[:AMIGO_DE]</span>-><span class="nd">(j)</span>
+<span class="kw">OPTIONAL MATCH</span> <span class="nd">()</span>-<span class="rel">[:COMERCIA_CON]</span>-><span class="nd">(j)</span>
+<span class="kw">WITH</span> j, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> influencia
+<span class="kw">ORDER BY</span> influencia <span class="kw">DESC LIMIT</span> 10
+<span class="kw">RETURN</span> j.nickname, influencia</div>
+
+  <div class="query-title">Consulta 6 — Clanes con guerras activas</div>
+  <div class="query-desc">Lista los clanes que actualmente tienen más conflictos activos, usando propiedades de la relación.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(c:Clan)</span>-<span class="rel">[g:EN_GUERRA_CON {activa: true}]</span>-><span class="nd">(:Clan)</span>
+<span class="kw">WITH</span> c, <span class="fn">COUNT</span>(g) <span class="kw">AS</span> guerrasActivas
+<span class="kw">ORDER BY</span> guerrasActivas <span class="kw">DESC</span>
+<span class="kw">RETURN</span> c.nombre, guerrasActivas</div>
+
+  <div class="query-title">Consulta 7 — Recomendación de clanes para un jugador</div>
+  <div class="query-desc">Busca los clanes donde ya están los amigos del jugador, pero a los que él todavía no pertenece.</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador {nickname: $nickname})</span>-<span class="rel">[:AMIGO_DE]</span>->
+      <span class="nd">(amigo:Jugador)</span>-<span class="rel">[:PERTENECE_A]</span>-><span class="nd">(c:Clan)</span>
+<span class="kw">WHERE NOT</span> <span class="nd">(j)</span>-<span class="rel">[:PERTENECE_A]</span>-><span class="nd">(c)</span>
+<span class="kw">WITH</span> c, <span class="fn">COUNT</span>(amigo) <span class="kw">AS</span> amigosEnClan
+<span class="kw">RETURN</span> c.nombre, amigosEnClan <span class="kw">ORDER BY</span> amigosEnClan <span class="kw">DESC LIMIT</span> 5</div>
+
+  <div class="query-title">Consulta 8 — Distribución de eventos por tipo</div>
+  <div class="query-desc">Agrupa y cuenta los eventos del servidor según su tipo (PvP, Construcción, Exploración, etc.).</div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(e:Evento)</span>
+<span class="kw">WITH</span> e.tipo <span class="kw">AS</span> tipo, <span class="fn">COUNT</span>(e) <span class="kw">AS</span> cantidad
+<span class="kw">RETURN</span> tipo, cantidad <span class="kw">ORDER BY</span> cantidad <span class="kw">DESC</span></div>
+
+  <h3 style="margin-top:4mm; color:#6c63ff;">⬡ Consultas complejas con recorrido de grafo</h3>
+
+  <div class="query-title">Recorrido 1 — Amigos de amigos (2° grado)</div>
+  <div class="query-desc">
+    Recorre el grafo 2 saltos en profundidad. Encuentra jugadores con amigos en común que aún no son amigos directos
+    — base de cualquier sistema de recomendación social (similar a "Personas que quizás conozcas" de Facebook).
+  </div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(j:Jugador {nickname: $nickname})</span>-<span class="rel">[:AMIGO_DE*2..2]</span>-><span class="nd">(amigo2:Jugador)</span>
+<span class="kw">WHERE NOT</span> <span class="nd">(j)</span>-<span class="rel">[:AMIGO_DE]</span>-><span class="nd">(amigo2)</span> <span class="kw">AND</span> j &lt;&gt; amigo2
+<span class="kw">WITH DISTINCT</span> amigo2 <span class="kw">LIMIT</span> 20
+<span class="kw">OPTIONAL MATCH</span> <span class="nd">(amigo2)</span>-<span class="rel">[:PERTENECE_A]</span>-><span class="nd">(clan:Clan)</span>
+<span class="kw">RETURN</span> amigo2.nickname, clan.nombre</div>
+
+  <div class="query-title">Recorrido 2 — Camino más corto entre dos jugadores</div>
+  <div class="query-desc">
+    Implementa el algoritmo de búsqueda del camino mínimo directamente en la base de datos usando la función nativa
+    <strong>shortestPath</strong>. Responde cuántos "grados de separación" hay entre dos jugadores cualquiera
+    (el concepto de los 6 grados de separación de Kevin Bacon). En SQL esto requeriría una consulta recursiva CTE compleja.
+  </div>
+  <div class="cypher-block"><span class="kw">MATCH</span> <span class="nd">(origen:Jugador {nickname: $origen})</span>,
+      <span class="nd">(destino:Jugador {nickname: $destino})</span>,
+      path = <span class="fn">shortestPath</span>(<span class="nd">(origen)</span>-<span class="rel">[:AMIGO_DE*]</span>-<span class="nd">(destino)</span>)
+<span class="kw">RETURN</span> [n <span class="kw">IN</span> <span class="fn">nodes</span>(path) | n.nickname] <span class="kw">AS</span> camino,
+       <span class="fn">length</span>(path) <span class="kw">AS</span> grados_de_separacion</div>
+
+  <h2>4. Funcionalidad de la Aplicación</h2>
+  <table>
+    <tr><th>Sección</th><th>Qué muestra / permite hacer</th></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Estadísticas generales, ranking PvP, top comerciantes, jugadores más conectados, actividad por hora, distribución de niveles</td></tr>
+    <tr><td><strong>Grafo interactivo</strong></td><td>Visualización de la red completa con nodos y aristas coloreadas por tipo de relación. Filtros por Amistad / Enemistad / Comercio. Hover con info del jugador.</td></tr>
+    <tr><td><strong>Jugadores</strong></td><td>Búsqueda por nickname, ver perfil, amigos de amigos, camino más corto</td></tr>
+    <tr><td><strong>Clanes</strong></td><td>Ranking de clanes por poder, clanes en guerra activa, red de alianzas</td></tr>
+    <tr><td><strong>Economía</strong></td><td>Volumen de comercio total, top items más transaccionados, mercados activos</td></tr>
+    <tr><td><strong>Eventos</strong></td><td>Eventos activos, historial, recompensas por tipo</td></tr>
+  </table>
+
+  <div class="page-footer">
+    <span>MineGraph — Trabajo Práctico Grupal N°2 · Bases de Datos II</span>
+    <span>Página 4</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- PÁGINA 5 — VENTAJAS/DESVENTAJAS + IA + CONCLUSIÓN  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-small">⬡ MineGraph</span>
+    <span class="section-name">Análisis Técnico · IA · Conclusión</span>
+  </div>
+
+  <h2>5. Neo4j vs Bases de Datos Relacionales</h2>
+
+  <div class="two-col">
+    <div class="pros">
+      <h3>✅ Ventajas de Neo4j en este caso</h3>
+      <ul>
+        <li><strong>Consultas de grafo nativas:</strong> recorridos multi-salto como <em>shortestPath</em> o amigos de amigos en una sola línea Cypher, sin JOINs.</li>
+        <li><strong>Propiedades en relaciones:</strong> <em>COMERCIA_CON</em> guarda volumen, fecha y el ítem más comerciado directamente en la arista.</li>
+        <li><strong>Modelo intuitivo:</strong> el diagrama de entidades ES el grafo. No hay "traducción" entre el dominio y la base de datos.</li>
+        <li><strong>Rendimiento en traversals:</strong> recorrer relaciones es O(1) por nodo, no se degrada con el tamaño total.</li>
+        <li><strong>Cypher legible:</strong> el lenguaje de consulta expresa patrones de grafo de forma clara y concisa.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h3>❌ Desventajas / Limitaciones</h3>
+      <ul>
+        <li><strong>No apta para reportes masivos:</strong> agregaciones tipo BI (millones de filas) son más lentas que en PostgreSQL.</li>
+        <li><strong>Menor ecosistema:</strong> menos herramientas de reportes y BI nativas comparado con bases relacionales.</li>
+        <li><strong>Curva de aprendizaje:</strong> Cypher es un lenguaje nuevo para la mayoría de los equipos.</li>
+        <li><strong>Datos tabulares simples:</strong> para datos sin relaciones complejas, una tabla SQL es más eficiente.</li>
+        <li><strong>Menor adopción:</strong> menos administradores con experiencia en producción.</li>
+      </ul>
+    </div>
+  </div>
+
+  <table style="margin-top:3mm;">
+    <tr><th>Escenario</th><th>Mejor opción</th><th>Motivo</th></tr>
+    <tr><td>Redes sociales, grafos de conocimiento</td><td><strong>Neo4j ✅</strong></td><td>Relaciones complejas, traversals, recomendaciones</td></tr>
+    <tr><td>Series temporales, logs masivos, IoT</td><td>Cassandra</td><td>Writes masivos, particionado por tiempo</td></tr>
+    <tr><td>Reportes tabulares, transacciones ACID</td><td>PostgreSQL / MySQL</td><td>JOINs estables, madurez, ecosistema BI</td></tr>
+    <tr><td>Documentos JSON sin esquema fijo</td><td>MongoDB</td><td>Flexibilidad de esquema, consultas por documento</td></tr>
+  </table>
+
+  <h2>6. Uso de Inteligencia Artificial</h2>
+  <p>
+    Se utilizó <strong>Claude (Anthropic)</strong> como asistente durante el desarrollo. La IA fue usada como
+    herramienta de apoyo, no como reemplazo del aprendizaje: cada sugerencia fue revisada, comprendida y adaptada
+    al contexto del proyecto.
+  </p>
+
+  <table>
+    <tr><th>Área de uso</th><th>Descripción</th><th>Proporción</th></tr>
+    <tr><td><strong>Carga de datos</strong></td><td>Generación del DataInitializer con ~800 jugadores, 15 clanes, eventos y regiones con datos realistas</td><td>Alta</td></tr>
+    <tr><td><strong>Consultas Cypher</strong></td><td>Ayuda en la formulación de traversals (shortestPath, *2..2) y optimización de queries</td><td>Media</td></tr>
+    <tr><td><strong>Frontend</strong></td><td>Estructura de componentes Angular, integración con vis.js para el grafo interactivo</td><td>Media</td></tr>
+    <tr><td><strong>Backend</strong></td><td>Configuración Spring Data Neo4j 7, seguridad JWT, resolución de bugs de mapeo de relaciones</td><td>Media</td></tr>
+    <tr><td><strong>Diseño del modelo</strong></td><td>Definición de nodos, relaciones y propiedades según el dominio elegido</td><td>Baja</td></tr>
+  </table>
+
+  <div class="warn-box" style="margin-top:3mm;">
+    <span style="font-size:12pt;">⚠️</span>
+    <strong>Aclaración:</strong> Todo el código generado con IA fue revisado, comprendido y probado por el equipo.
+    Se utilizó como herramienta de productividad y aprendizaje, no como sustituto del trabajo propio.
+    El diseño del sistema, la elección tecnológica y la lógica de negocio fueron decisiones del grupo.
+  </div>
+
+  <h2>7. Conclusión</h2>
+  <p>
+    MineGraph demuestra en la práctica la ventaja de elegir la herramienta correcta para cada problema.
+    Un servidor Minecraft es, en esencia, una red social: jugadores que se conectan entre sí de múltiples
+    formas. Modelar eso como un grafo en Neo4j resultó natural, expresivo y eficiente.
+  </p>
+  <p>
+    Las consultas más poderosas del sistema — el camino más corto entre jugadores y los amigos de amigos —
+    son triviales en Cypher y habrían requerido lógica recursiva compleja en SQL. Esto evidencia la
+    importancia de analizar el dominio del problema antes de elegir la tecnología de persistencia.
+  </p>
+  <p>
+    El trabajo integra conocimientos de modelado de datos, lenguajes de consulta, desarrollo backend con
+    Java y Spring Boot, y desarrollo frontend con Angular, aplicados a un caso de uso concreto y funcional.
+  </p>
+
+  <div class="info-box" style="margin-top:3mm;">
+    <strong>Stack tecnológico completo:</strong>
+    Neo4j 2026 (Graph DB) · Spring Boot 3.2 · Java 21 · Spring Data Neo4j 7 · JWT Security · Angular 17 · TypeScript · vis.js · Chart.js
+  </div>
+
+  <div class="page-footer">
+    <span>MineGraph — Trabajo Práctico Grupal N°2 · Bases de Datos II</span>
+    <span>Página 5</span>
+  </div>
+</div>
+
+</body>
+</html>

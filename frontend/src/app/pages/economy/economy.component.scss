@@ -1,0 +1,41 @@
+.economy-page { display: flex; flex-direction: column; gap: 20px; max-width: 1600px; margin: 0 auto; }
+.page-header { h1 { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 700; color: #e2e8f0; } .page-sub { font-size: 13px; color: #718096; margin-top: 4px; } }
+
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.econ-kpi {
+  padding: 22px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden;
+  &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--c, #ffd700); }
+  .kpi-icon { font-size: 28px; margin-bottom: 4px; }
+  .kpi-val { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700; line-height: 1; }
+  .kpi-label { font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+}
+
+.charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.chart-card { padding: 18px; }
+.chart-title { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 8px; mat-icon { font-size: 17px; } }
+
+.tables-row { display: grid; grid-template-columns: 380px 1fr; gap: 20px; }
+.table-section { padding: 18px; }
+.transactions-section { padding: 18px; }
+.section-h { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; mat-icon { font-size: 17px; } }
+
+.vendor-nick { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+.ventas-val { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--mg-primary); }
+.income-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #ffd700; font-weight: 600; }
+
+.tx-list { display: flex; flex-direction: column; gap: 0; max-height: 400px; overflow-y: auto; }
+.tx-item {
+  display: flex; align-items: center; gap: 12px; padding: 9px 4px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  &:hover { background: rgba(255,215,0,0.03); border-radius: 6px; }
+  &:last-child { border-bottom: none; }
+}
+.tx-left { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
+.tx-tipo { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; letter-spacing: 0.5px; width: fit-content; }
+.tipo-venta { background: rgba(0,212,255,0.12); color: #00d4ff; }
+.tipo-compra { background: rgba(0,255,136,0.12); color: #00ff88; }
+.tipo-subasta { background: rgba(255,215,0,0.12); color: #ffd700; }
+.tipo-intercambio { background: rgba(168,85,247,0.12); color: #a855f7; }
+.tx-players { display: flex; align-items: center; gap: 4px; .tx-vendor { font-size: 11px; color: #00d4ff; font-weight: 600; } .tx-buyer { font-size: 11px; color: #a855f7; font-weight: 600; } mat-icon { font-size: 12px; } }
+.tx-center { flex: 1; .tx-item-name { font-size: 12px; color: #e2e8f0; display: block; font-weight: 500; } .tx-qty { font-size: 11px; color: #718096; } }
+.tx-right { text-align: right; .tx-total { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #ffd700; display: block; font-weight: 600; } .tx-mercado { font-size: 10px; color: #4a5568; } }
+.loading-center { display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100vh - 120px); gap: 16px; p { color: #718096; font-size: 13px; } }

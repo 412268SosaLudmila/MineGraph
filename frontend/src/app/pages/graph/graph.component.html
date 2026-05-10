@@ -1,0 +1,142 @@
+<div class="graph-page">
+
+  <!-- Header -->
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1>Mapa de <span class="gradient-text">Relaciones</span></h1>
+      <p class="page-sub">Visualización Neo4j · {{ totalNodes }} nodos · {{ totalEdges }} conexiones</p>
+    </div>
+    <div class="header-stats">
+      <div class="hstat"><span class="hstat-val neon-text-primary">{{ totalNodes }}</span><span class="hstat-l">Jugadores</span></div>
+      <div class="hstat-div"></div>
+      <div class="hstat"><span class="hstat-val neon-text-secondary">{{ totalEdges }}</span><span class="hstat-l">Relaciones</span></div>
+      <div class="hstat-div"></div>
+      <div class="hstat"><span class="hstat-val neon-text-green">{{ onlineNodes }}</span><span class="hstat-l">Online</span></div>
+    </div>
+  </div>
+
+  <div class="graph-layout animate-fade-in-up delay-1">
+
+    <!-- Controls Panel -->
+    <div class="controls-panel mg-card">
+      <h3 class="panel-title"><mat-icon>tune</mat-icon> Controles</h3>
+
+      <!-- Search -->
+      <div class="control-section">
+        <label class="control-label">Buscar jugador</label>
+        <div class="search-row">
+          <input class="mg-input" style="flex:1; font-size:13px; padding:8px 12px"
+                 placeholder="Nickname..." [(ngModel)]="searchQuery"
+                 (keyup.enter)="searchNode()">
+          <button class="icon-action-btn" (click)="searchNode()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Relation filters -->
+      <div class="control-section">
+        <label class="control-label">Tipo de Relaciones</label>
+        <div class="toggle-row">
+          <span class="rel-dot" style="background:#00ff88"></span>
+          <span class="rel-label">Amistad</span>
+          <mat-slide-toggle [(ngModel)]="showFriends" (change)="applyFilters()" color="primary"></mat-slide-toggle>
+        </div>
+        <div class="toggle-row">
+          <span class="rel-dot" style="background:#ff4444"></span>
+          <span class="rel-label">Enemistad</span>
+          <mat-slide-toggle [(ngModel)]="showEnemies" (change)="applyFilters()" color="warn"></mat-slide-toggle>
+        </div>
+        <div class="toggle-row">
+          <span class="rel-dot" style="background:#ffd700"></span>
+          <span class="rel-label">Comercio</span>
+          <mat-slide-toggle [(ngModel)]="showTrade" (change)="applyFilters()"></mat-slide-toggle>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="control-section">
+        <label class="control-label">Leyenda</label>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-line" style="background:#00ff88"></span>
+            <span>Amistad</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background:#ff4444"></span>
+            <span>Enemistad</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background:#ffd700"></span>
+            <span>Comercio</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot online"></span>
+            <span>Online</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot"></span>
+            <span>Offline</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="control-section">
+        <label class="control-label">Acciones</label>
+        <button class="action-btn" (click)="fitNetwork()">
+          <mat-icon>fit_screen</mat-icon> Ajustar Vista
+        </button>
+        <button class="action-btn" (click)="stabilize()">
+          <mat-icon>refresh</mat-icon> Re-estabilizar
+        </button>
+      </div>
+
+      <!-- Selected Node Info -->
+      <div class="control-section node-info" *ngIf="selectedNode">
+        <label class="control-label">Nodo Seleccionado</label>
+        <div class="node-detail-card">
+          <div class="node-detail-avatar"
+               [style.background]="selectedNode.online ? '#6c63ff' : '#1a1a2e'">
+            {{ selectedNode.label.substring(0,2).toUpperCase() }}
+          </div>
+          <div class="node-details">
+            <div class="node-detail-name">{{ selectedNode.label }}</div>
+            <div class="node-detail-titulo">{{ selectedNode.titulo }}</div>
+            <div class="node-meta-row">
+              <span class="badge" [class]="selectedNode.online ? 'badge-online' : 'badge-offline'">
+                {{ selectedNode.online ? 'Online' : 'Offline' }}
+              </span>
+              <span style="font-size:11px; color:#a855f7">{{ selectedNode.clan || 'Sin clan' }}</span>
+            </div>
+            <div class="node-meta-row" style="margin-top:6px">
+              <span style="font-size:11px; color:#718096">Nivel</span>
+              <span style="font-size:11px; color:#00d4ff; font-family:'Orbitron',monospace">{{ selectedNode.nivel }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network Canvas -->
+    <div class="network-wrapper mg-card">
+      <div *ngIf="loading" class="network-loading">
+        <div class="loading-hex">⬡</div>
+        <div class="mg-spinner"></div>
+        <p>Cargando grafo desde Neo4j...</p>
+      </div>
+      <div #networkContainer class="network-canvas" [style.display]="loading ? 'none' : 'block'"></div>
+
+      <!-- Floating controls -->
+      <div class="floating-controls" *ngIf="!loading">
+        <button class="float-btn" (click)="fitNetwork()" matTooltip="Ajustar vista">
+          <mat-icon>fit_screen</mat-icon>
+        </button>
+        <button class="float-btn" (click)="stabilize()" matTooltip="Re-estabilizar">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

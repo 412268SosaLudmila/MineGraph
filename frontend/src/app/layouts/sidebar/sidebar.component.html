@@ -1,0 +1,63 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <span class="logo-glyph">⬡</span>
+    </div>
+    <div class="logo-text" *ngIf="!collapsed">
+      <span class="logo-name">Mine<span class="logo-accent">Graph</span></span>
+      <span class="logo-version">v1.0 Analytics</span>
+    </div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <!-- Status indicator -->
+  <div class="sidebar-status" *ngIf="!collapsed">
+    <div class="status-dot"></div>
+    <span class="status-text">Servidor Online</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <span class="nav-section-label" *ngIf="!collapsed">NAVEGACIÓN</span>
+    <a
+      *ngFor="let item of navItems"
+      class="nav-item"
+      [routerLink]="item.route"
+      [class.active]="isActive(item.route)"
+      [matTooltip]="collapsed ? item.label : ''"
+      matTooltipPosition="right">
+      <div class="nav-icon">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <div class="nav-glow" *ngIf="isActive(item.route)"></div>
+      </div>
+      <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      <span
+        class="nav-badge"
+        *ngIf="item.badge && !collapsed"
+        [style.background-color]="item.badgeColor || 'rgba(108,99,255,0.2)'"
+        [style.color]="item.badgeColor ? '#fff' : 'var(--mg-primary)'">
+        {{ item.badge }}
+      </span>
+    </a>
+  </nav>
+
+  <div class="sidebar-spacer"></div>
+  <div class="sidebar-divider"></div>
+
+  <!-- Bottom info -->
+  <div class="sidebar-bottom" *ngIf="!collapsed">
+    <div class="server-stats">
+      <div class="server-stat">
+        <span class="server-stat-label">Neo4j</span>
+        <span class="server-stat-value connected">Conectado</span>
+      </div>
+      <div class="server-stat">
+        <span class="server-stat-label">API</span>
+        <span class="server-stat-value connected">Online</span>
+      </div>
+    </div>
+    <div class="sidebar-version">MineGraph Analytics Platform</div>
+  </div>
+</aside>

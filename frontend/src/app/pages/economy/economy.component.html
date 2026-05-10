@@ -1,0 +1,110 @@
+<div class="economy-page" *ngIf="!loading && stats; else loadingTpl">
+
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1>Panel <span class="gradient-text-gold">Económico</span></h1>
+      <p class="page-sub">Sistema de comercio · {{ formatNum(stats.totalTransacciones) }} transacciones</p>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row animate-fade-in-up delay-1">
+    <div class="mg-card econ-kpi" style="--c:#ffd700">
+      <mat-icon class="kpi-icon" style="color:#ffd700">account_balance</mat-icon>
+      <div class="kpi-val" style="color:#ffd700">{{ formatCurrency(stats.volumenTotal) }}</div>
+      <div class="kpi-label">Volumen Total</div>
+    </div>
+    <div class="mg-card econ-kpi" style="--c:#00d4ff">
+      <mat-icon class="kpi-icon" style="color:#00d4ff">swap_horiz</mat-icon>
+      <div class="kpi-val" style="color:#00d4ff">{{ formatNum(stats.totalTransacciones) }}</div>
+      <div class="kpi-label">Transacciones</div>
+    </div>
+    <div class="mg-card econ-kpi" style="--c:#00ff88">
+      <mat-icon class="kpi-icon" style="color:#00ff88">trending_up</mat-icon>
+      <div class="kpi-val" style="color:#00ff88">{{ formatCurrency(stats.transaccionPromedio) }}</div>
+      <div class="kpi-label">Ticket Promedio</div>
+    </div>
+    <div class="mg-card econ-kpi" style="--c:#a855f7">
+      <mat-icon class="kpi-icon" style="color:#a855f7">storefront</mat-icon>
+      <div class="kpi-val" style="color:#a855f7">{{ stats.volumenPorMercado ? stats.volumenPorMercado.length : 0 }}</div>
+      <div class="kpi-label">Mercados Activos</div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="charts-row animate-fade-in-up delay-2">
+    <div class="mg-card chart-card">
+      <h3 class="chart-title"><mat-icon style="color:#ffd700">diamond</mat-icon> Top Items Comercializados</h3>
+      <div style="height: 220px; margin-top:12px">
+        <canvas baseChart [data]="itemsChartData" [options]="barOptions" type="bar"></canvas>
+      </div>
+    </div>
+    <div class="mg-card chart-card">
+      <h3 class="chart-title"><mat-icon style="color:#00d4ff">pie_chart</mat-icon> Volumen por Mercado</h3>
+      <div style="height: 220px; margin-top:12px">
+        <canvas baseChart [data]="mercadoChartData" [options]="doughnutOptions" type="doughnut"></canvas>
+      </div>
+    </div>
+    <div class="mg-card chart-card">
+      <h3 class="chart-title"><mat-icon style="color:#a855f7">donut_large</mat-icon> Tipos de Transacción</h3>
+      <div style="height: 220px; margin-top:12px">
+        <canvas baseChart [data]="tipoChartData" [options]="polarOptions" type="polarArea"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables row -->
+  <div class="tables-row animate-fade-in-up delay-3">
+
+    <!-- Top Vendedores -->
+    <div class="mg-card table-section">
+      <h3 class="section-h"><mat-icon style="color:#ffd700">military_tech</mat-icon> Top Vendedores</h3>
+      <table class="mg-table">
+        <thead><tr><th>#</th><th>Jugador</th><th>Ventas</th><th>Ingresos</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let v of stats.topVendedores; let i = index">
+            <td><span class="rank-col" [class.rank-1]="i===0" [class.rank-2]="i===1" [class.rank-3]="i===2">
+              {{ i < 3 ? ['🥇','🥈','🥉'][i] : '#'+(i+1) }}
+            </span></td>
+            <td><span class="vendor-nick">{{ v['vendedor'] }}</span></td>
+            <td><span class="ventas-val">{{ v['ventas'] }}</span></td>
+            <td><span class="income-val">{{ formatCurrency(v['ingresos']) }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Últimas Transacciones -->
+    <div class="mg-card table-section transactions-section">
+      <h3 class="section-h"><mat-icon style="color:#00d4ff">receipt_long</mat-icon> Últimas Transacciones</h3>
+      <div class="tx-list">
+        <div class="tx-item" *ngFor="let t of stats.ultimasTransacciones?.slice(0,20)">
+          <div class="tx-left">
+            <span class="tx-tipo" [class]="getTipoClass(t.tipo)">{{ t.tipo }}</span>
+            <div class="tx-players">
+              <span class="tx-vendor">{{ t.vendedorNick }}</span>
+              <mat-icon style="font-size:12px; color:#718096">arrow_forward</mat-icon>
+              <span class="tx-buyer">{{ t.compradorNick }}</span>
+            </div>
+          </div>
+          <div class="tx-center">
+            <span class="tx-item-name">{{ t.itemNombre }}</span>
+            <span class="tx-qty">x{{ t.cantidad }}</span>
+          </div>
+          <div class="tx-right">
+            <span class="tx-total">{{ formatCurrency(t.total) }}</span>
+            <span class="tx-mercado">{{ t.mercado }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-center">
+    <div class="mg-spinner"></div>
+    <p>Cargando datos económicos...</p>
+  </div>
+</ng-template>

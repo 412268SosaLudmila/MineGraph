@@ -1,0 +1,476 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .page-h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.5px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+    color: #718096;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,71,87,0.12);
+  border: 1px solid rgba(255,71,87,0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff4757;
+  letter-spacing: 1.5px;
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    background: #ff4757;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ff4757;
+    animation: pulseDot 1.5s ease-in-out infinite;
+  }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1400px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 300px 300px;
+  gap: 20px;
+
+  @media (max-width: 1200px) { grid-template-columns: 1fr 1fr; }
+}
+
+.chart-card {
+  padding: 20px;
+}
+
+.chart-card-sm { min-width: 0; }
+
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .chart-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.3px;
+  }
+
+  .chart-subtitle {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 3px;
+  }
+
+  .chart-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--mg-secondary);
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+}
+
+.chart-body { position: relative; }
+
+// Tables row
+.tables-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 380px;
+  gap: 20px;
+
+  @media (max-width: 1300px) { grid-template-columns: 1fr 1fr; }
+}
+
+.table-card {
+  padding: 20px;
+  overflow: hidden;
+}
+
+.table-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .table-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .table-icon { font-size: 20px; }
+  }
+
+  .table-link {
+    font-size: 12px;
+    color: var(--mg-primary);
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 1; text-decoration: underline; }
+  }
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .player-info {
+    display: flex;
+    flex-direction: column;
+
+    .player-nick {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .player-clan {
+      font-size: 11px;
+      color: #718096;
+    }
+  }
+}
+
+.kd-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+
+  &.kd-elite { color: #ffd700; background: rgba(255,215,0,0.12); }
+  &.kd-high  { color: #00ff88; background: rgba(0,255,136,0.12); }
+  &.kd-mid   { color: #00d4ff; background: rgba(0,212,255,0.12); }
+  &.kd-low   { color: #718096; background: rgba(113,128,150,0.12); }
+}
+
+.kills-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  color: #ff4757;
+  font-weight: 700;
+}
+
+.clan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .clan-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .clan-name {
+    font-size: 13px;
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+}
+
+.members-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  color: var(--mg-primary);
+}
+
+.riqueza-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ffd700;
+}
+
+.victorias-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #00ff88;
+  font-weight: 600;
+}
+
+// Events list
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  max-height: 340px;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.2s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(108,99,255,0.04); border-radius: 8px; padding: 10px 8px; margin: 0 -8px; }
+
+  .event-type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.badge-pvp   { background: #ff4757; box-shadow: 0 0 6px #ff4757; }
+    &.badge-boss  { background: #a855f7; box-shadow: 0 0 6px #a855f7; }
+    &.badge-raid  { background: #ff9f43; box-shadow: 0 0 6px #ff9f43; }
+    &.badge-torneo { background: #ffd700; box-shadow: 0 0 6px #ffd700; }
+    &.badge-exp   { background: #00d4ff; box-shadow: 0 0 6px #00d4ff; }
+  }
+
+  .event-info {
+    flex: 1;
+    min-width: 0;
+
+    .event-name {
+      font-size: 13px;
+      color: #e2e8f0;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .event-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+
+      .event-region {
+        font-size: 11px;
+        color: #718096;
+      }
+
+      .event-players {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 11px;
+        color: #718096;
+      }
+    }
+  }
+
+  .event-reward {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+
+    .reward-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #ffd700;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+}
+
+// Traders
+.full-card { padding: 20px; }
+
+.section-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffd700;
+  background: rgba(255,215,0,0.1);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.traders-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.trader-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  transition: all 0.25s ease;
+  position: relative;
+
+  &:hover {
+    border-color: rgba(255,215,0,0.25);
+    background: rgba(255,215,0,0.04);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,215,0,0.08);
+  }
+
+  .trader-rank {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 14px;
+    &.rank-1, &.rank-2, &.rank-3 { font-size: 16px; }
+  }
+
+  .trader-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    position: relative;
+
+    &.online::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background: #00ff88;
+      border-radius: 50%;
+      border: 2px solid #08090f;
+      box-shadow: 0 0 6px #00ff88;
+    }
+  }
+
+  .trader-info {
+    display: flex;
+    flex-direction: column;
+
+    .trader-nick {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .trader-clan {
+      font-size: 10px;
+      color: #718096;
+      margin-top: 2px;
+    }
+  }
+
+  .trader-coins {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #ffd700;
+    font-weight: 600;
+    background: rgba(255,215,0,0.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+}
+
+// Loading
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 120px);
+  gap: 20px;
+
+  .loading-logo {
+    font-size: 48px;
+    animation: spin 3s linear infinite;
+    background: linear-gradient(135deg, #6c63ff, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    color: #718096;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.7; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.badge-exp { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.3); }
+.badge-default { background: rgba(113,128,150,0.15); color: #718096; border: 1px solid rgba(113,128,150,0.3); }

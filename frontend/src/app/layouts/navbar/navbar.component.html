@@ -1,0 +1,70 @@
+<header class="navbar">
+  <div class="navbar-left">
+    <button class="toggle-btn" (click)="toggleSidebar.emit()" matRipple>
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="page-title">
+      <span class="page-title-text">{{ getPageTitle() }}</span>
+      <div class="title-breadcrumb">
+        <span>MineGraph</span>
+        <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+        <span class="breadcrumb-current">{{ getPageTitle() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar-center">
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar jugadores, clanes, eventos..."
+        [(ngModel)]="searchQuery">
+      <span class="search-kbd">Ctrl+K</span>
+    </div>
+  </div>
+
+  <div class="navbar-right">
+    <div class="server-time">
+      <mat-icon class="time-icon">schedule</mat-icon>
+      <span class="time-text">{{ currentTime | date:'HH:mm:ss' }}</span>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <button class="icon-btn" matTooltip="Notificaciones">
+      <mat-icon>notifications</mat-icon>
+      <span class="notif-dot"></span>
+    </button>
+
+    <div class="nav-divider"></div>
+
+    <div class="user-menu" [matMenuTriggerFor]="userMenu">
+      <div class="user-avatar">
+        <span>{{ (auth.getCurrentUser()?.username || 'A')[0].toUpperCase() }}</span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">{{ auth.getCurrentUser()?.username || 'Admin' }}</span>
+        <span class="user-role">{{ auth.getCurrentUser()?.role || 'ROLE_ADMIN' }}</span>
+      </div>
+      <mat-icon class="dropdown-icon">expand_more</mat-icon>
+    </div>
+
+    <mat-menu #userMenu="matMenu" class="mg-user-menu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Mi Perfil</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Configuración</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

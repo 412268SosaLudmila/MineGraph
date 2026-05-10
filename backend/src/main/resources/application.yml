@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: minegraph-backend
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: minegraph_secure_pass_2024
+  data:
+    neo4j:
+      repositories:
+        enabled: true
+
+minegraph:
+  jwt:
+    secret: TXluZUdyYXBoU3VwZXJTZWNyZXRLZXkyMDI0UHJlbWl1bVBsYXRmb3Jt
+    expiration: 86400000
+
+logging:
+  level:
+    org.springframework.data.neo4j: DEBUG
+    com.minegraph: DEBUG

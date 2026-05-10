@@ -1,0 +1,329 @@
+<div class="dashboard-page" *ngIf="!loading; else loadingTpl">
+
+  <!-- Page Header -->
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1 class="page-h1">Panel de Control <span class="gradient-text">MineGraph</span></h1>
+      <p class="page-sub">Análisis en tiempo real del servidor · Neo4j Analytics Engine</p>
+    </div>
+    <div class="header-actions">
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span>LIVE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards Row -->
+  <div class="kpi-grid">
+    <div class="mg-card stat-card animate-fade-in-up delay-1"
+         style="--stat-gradient: linear-gradient(90deg, #6c63ff, #00d4ff)">
+      <div class="stat-icon" style="background: rgba(108,99,255,0.15); color: #6c63ff;">
+        <mat-icon>people</mat-icon>
+      </div>
+      <div class="stat-value neon-text-primary">{{ formatNumber(stats!.totalJugadores) }}</div>
+      <div class="stat-label">Total Jugadores</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">arrow_upward</mat-icon>
+        {{ stats!.jugadoresOnline }} online ahora
+      </div>
+    </div>
+
+    <div class="mg-card stat-card animate-fade-in-up delay-2"
+         style="--stat-gradient: linear-gradient(90deg, #00ff88, #00d4ff)">
+      <div class="stat-icon" style="background: rgba(0,255,136,0.12); color: #00ff88;">
+        <mat-icon>wifi</mat-icon>
+      </div>
+      <div class="stat-value neon-text-green">{{ stats!.jugadoresOnline }}</div>
+      <div class="stat-label">Jugadores Online</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">trending_up</mat-icon>
+        {{ ((stats!.jugadoresOnline / stats!.totalJugadores) * 100).toFixed(1) }}% del total
+      </div>
+    </div>
+
+    <div class="mg-card stat-card animate-fade-in-up delay-3"
+         style="--stat-gradient: linear-gradient(90deg, #a855f7, #6c63ff)">
+      <div class="stat-icon" style="background: rgba(168,85,247,0.15); color: #a855f7;">
+        <mat-icon>shield</mat-icon>
+      </div>
+      <div class="stat-value" style="color:#a855f7; text-shadow: 0 0 10px rgba(168,85,247,0.6)">
+        {{ stats!.totalClanes }}
+      </div>
+      <div class="stat-label">Clanes Activos</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">groups</mat-icon>
+        {{ (stats!.totalJugadores / stats!.totalClanes).toFixed(1) }} jugadores/clan
+      </div>
+    </div>
+
+    <div class="mg-card stat-card animate-fade-in-up delay-4"
+         style="--stat-gradient: linear-gradient(90deg, #ffd700, #ff9f43)">
+      <div class="stat-icon" style="background: rgba(255,215,0,0.12); color: #ffd700;">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="stat-value gradient-text-gold">{{ formatCurrency(stats!.volumenEconomico) }}</div>
+      <div class="stat-label">Volumen Económico</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">swap_horiz</mat-icon>
+        {{ formatNumber(stats!.totalTransacciones) }} transacciones
+      </div>
+    </div>
+
+    <div class="mg-card stat-card animate-fade-in-up delay-5"
+         style="--stat-gradient: linear-gradient(90deg, #ff4757, #ff6b6b)">
+      <div class="stat-icon" style="background: rgba(255,71,87,0.12); color: #ff4757;">
+        <mat-icon>bolt</mat-icon>
+      </div>
+      <div class="stat-value" style="color:#ff4757; text-shadow: 0 0 10px rgba(255,71,87,0.6)">
+        {{ stats!.totalEventos }}
+      </div>
+      <div class="stat-label">Total Eventos</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">radio_button_checked</mat-icon>
+        {{ stats!.eventosRecientes ? stats!.eventosRecientes.length : 0 }} recientes
+      </div>
+    </div>
+
+    <div class="mg-card stat-card animate-fade-in-up delay-6"
+         style="--stat-gradient: linear-gradient(90deg, #00d4ff, #6c63ff)">
+      <div class="stat-icon" style="background: rgba(0,212,255,0.12); color: #00d4ff;">
+        <mat-icon>hub</mat-icon>
+      </div>
+      <div class="stat-value neon-text-secondary">
+        {{ formatNumber(stats!.totalJugadores * 6) }}
+      </div>
+      <div class="stat-label">Relaciones en Grafo</div>
+      <div class="stat-change positive">
+        <mat-icon style="font-size:14px">device_hub</mat-icon>
+        Red social activa
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Activity Chart -->
+    <div class="mg-card chart-card animate-fade-in-up delay-3">
+      <div class="chart-card-header">
+        <div>
+          <h3 class="chart-title">Actividad del Servidor</h3>
+          <p class="chart-subtitle">Jugadores conectados por hora</p>
+        </div>
+        <div class="chart-badge">Últimas 24h</div>
+      </div>
+      <div class="chart-body" style="height: 200px">
+        <canvas baseChart
+          [data]="activityChartData"
+          [options]="activityChartOptions"
+          type="line">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Economy Doughnut -->
+    <div class="mg-card chart-card chart-card-sm animate-fade-in-up delay-4">
+      <div class="chart-card-header">
+        <div>
+          <h3 class="chart-title">Top Items</h3>
+          <p class="chart-subtitle">Por volumen comercial</p>
+        </div>
+      </div>
+      <div class="chart-body" style="height: 200px">
+        <canvas baseChart
+          [data]="econChartData"
+          [options]="econChartOptions"
+          type="doughnut">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Events Bar -->
+    <div class="mg-card chart-card chart-card-sm animate-fade-in-up delay-5">
+      <div class="chart-card-header">
+        <div>
+          <h3 class="chart-title">Tipos de Eventos</h3>
+          <p class="chart-subtitle">Frecuencia por categoría</p>
+        </div>
+      </div>
+      <div class="chart-body" style="height: 200px">
+        <canvas baseChart
+          [data]="eventChartData"
+          [options]="eventChartOptions"
+          type="bar">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables Row -->
+  <div class="tables-row">
+
+    <!-- Top PvP -->
+    <div class="mg-card table-card animate-fade-in-up delay-4">
+      <div class="table-card-header">
+        <div class="table-title-group">
+          <mat-icon class="table-icon" style="color:#ff4757">military_tech</mat-icon>
+          <h3>Ranking PvP</h3>
+        </div>
+        <a class="table-link" routerLink="/players">Ver todos</a>
+      </div>
+      <table class="mg-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>K/D</th>
+            <th>Kills</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let j of stats!.topPvP; let i = index">
+            <td><span class="rank-col" [class.rank-1]="i===0" [class.rank-2]="i===1" [class.rank-3]="i===2">
+              {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1) }}
+            </span></td>
+            <td>
+              <div class="player-row">
+                <div class="player-avatar" [class.online]="j.estadoOnline"
+                     [style.background]="getAvatarColor(j.nickname)">
+                  {{ getInitials(j.nickname) }}
+                </div>
+                <div class="player-info">
+                  <span class="player-nick">{{ j.nickname }}</span>
+                  <span class="player-clan">{{ j.clanNombre || 'Sin clan' }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="kd-badge" [class]="getKDClass(j.kdRatio)">{{ j.kdRatio }}</span></td>
+            <td><span class="kills-val">{{ formatNumber(j.kills) }}</span></td>
+            <td><span class="badge" [class]="j.estadoOnline ? 'badge-online' : 'badge-offline'">
+              {{ j.estadoOnline ? 'Online' : 'Offline' }}
+            </span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Dominant Clans -->
+    <div class="mg-card table-card animate-fade-in-up delay-5">
+      <div class="table-card-header">
+        <div class="table-title-group">
+          <mat-icon class="table-icon" style="color:#a855f7">shield</mat-icon>
+          <h3>Clanes Dominantes</h3>
+        </div>
+        <a class="table-link" routerLink="/clans">Ver todos</a>
+      </div>
+      <table class="mg-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Clan</th>
+            <th>Miembros</th>
+            <th>Riqueza</th>
+            <th>Victorias</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of stats!.clanesDominantes; let i = index">
+            <td><span class="rank-col" [class.rank-1]="i===0" [class.rank-2]="i===1" [class.rank-3]="i===2">
+              {{ i < 3 ? ['🥇','🥈','🥉'][i] : '#'+(i+1) }}
+            </span></td>
+            <td>
+              <div class="clan-row">
+                <span class="clan-tag" [style.color]="c.color" [style.border-color]="c.color+'40'">
+                  {{ c.tag }}
+                </span>
+                <span class="clan-name">{{ c.nombre }}</span>
+              </div>
+            </td>
+            <td><span class="members-val">{{ c.cantidadMiembros }}</span></td>
+            <td><span class="riqueza-val">{{ formatCurrency(c.riqueza) }}</span></td>
+            <td>
+              <div class="victorias-row">
+                <mat-icon style="font-size:14px; color:#00ff88">check_circle</mat-icon>
+                <span>{{ c.victorias }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="mg-card table-card animate-fade-in-up delay-6">
+      <div class="table-card-header">
+        <div class="table-title-group">
+          <mat-icon class="table-icon" style="color:#ffd700">bolt</mat-icon>
+          <h3>Eventos Recientes</h3>
+        </div>
+        <a class="table-link" routerLink="/events">Ver todos</a>
+      </div>
+      <div class="events-list">
+        <div class="event-item" *ngFor="let e of stats!.eventosRecientes">
+          <div class="event-type-dot" [ngClass]="getEventBadgeClass(e.tipo)"></div>
+          <div class="event-info">
+            <span class="event-name">{{ e.nombre }}</span>
+            <div class="event-meta">
+              <span class="badge" [ngClass]="getEventBadgeClass(e.tipo)" style="font-size:10px; padding:2px 7px">
+                {{ e.tipo }}
+              </span>
+              <span class="event-region">{{ e.region }}</span>
+              <span class="event-players">
+                <mat-icon style="font-size:12px">people</mat-icon>
+                {{ e.participantes }}
+              </span>
+            </div>
+          </div>
+          <div class="event-reward">
+            <span class="reward-val">{{ formatCurrency(e.recompensa) }}</span>
+            <span [class]="e.activo ? 'badge badge-online' : 'badge badge-offline'" style="font-size:9px">
+              {{ e.activo ? 'ACTIVO' : 'FIN' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Top Traders -->
+  <div class="mg-card full-card animate-fade-in-up delay-6">
+    <div class="table-card-header">
+      <div class="table-title-group">
+        <mat-icon class="table-icon" style="color:#ffd700">trending_up</mat-icon>
+        <h3>Top Comerciantes</h3>
+        <span class="section-badge">Economia</span>
+      </div>
+      <a class="table-link" routerLink="/economy">Ver economía completa</a>
+    </div>
+    <div class="traders-grid">
+      <div class="trader-card" *ngFor="let j of stats!.topComerciantes; let i = index">
+        <div class="trader-rank" [class.rank-1]="i===0" [class.rank-2]="i===1" [class.rank-3]="i===2">
+          {{ i < 3 ? ['🥇','🥈','🥉'][i] : '#'+(i+1) }}
+        </div>
+        <div class="trader-avatar" [style.background]="getAvatarColor(j.nickname)"
+             [class.online]="j.estadoOnline">
+          {{ getInitials(j.nickname) }}
+        </div>
+        <div class="trader-info">
+          <span class="trader-nick">{{ j.nickname }}</span>
+          <span class="trader-clan">{{ j.clanNombre || 'Sin clan' }}</span>
+        </div>
+        <div class="trader-coins">
+          <mat-icon style="font-size:14px; color:#ffd700">monetization_on</mat-icon>
+          <span>{{ formatCurrency(j.monedas) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-state">
+    <div class="loading-logo">⬡</div>
+    <div class="mg-spinner"></div>
+    <p>Cargando datos del servidor...</p>
+  </div>
+</ng-template>

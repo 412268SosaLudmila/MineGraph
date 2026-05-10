@@ -1,0 +1,28 @@
+# ── Backend (Maven / Spring Boot) ──
+backend/target/
+backend/.mvn/
+backend/*.log
+backend/backend.log
+
+# ── Frontend (Angular / Node) ──
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# ── IDE ──
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Logs ──
+*.log

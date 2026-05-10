@@ -1,0 +1,78 @@
+<div class="login-page">
+  <!-- Animated background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-particles">
+    <span *ngFor="let p of [1,2,3,4,5,6,7,8,9,10,11,12]" class="particle"></span>
+  </div>
+
+  <div class="login-container animate-fade-in-up">
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="logo-hexagon">
+        <span>⬡</span>
+      </div>
+      <div class="logo-details">
+        <h1 class="logo-title">Mine<span>Graph</span></h1>
+        <p class="logo-subtitle">Analytics Platform</p>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <div class="card-header">
+        <h2>Acceso al Sistema</h2>
+        <p>Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="field-group">
+          <label>Usuario</label>
+          <div class="field-wrapper">
+            <mat-icon class="field-icon">person</mat-icon>
+            <input
+              formControlName="username"
+              type="text"
+              placeholder="Nombre de usuario"
+              [class.error]="form.get('username')?.invalid && form.get('username')?.touched">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Contraseña</label>
+          <div class="field-wrapper">
+            <mat-icon class="field-icon">lock</mat-icon>
+            <input
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="••••••••"
+              [class.error]="form.get('password')?.invalid && form.get('password')?.touched">
+            <button type="button" class="toggle-pass" (click)="showPassword = !showPassword">
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="error-msg" *ngIf="error">
+          <mat-icon>error_outline</mat-icon>
+          {{ error }}
+        </div>
+
+        <button type="submit" class="login-btn" [disabled]="loading || form.invalid">
+          <span *ngIf="!loading">
+            <mat-icon>login</mat-icon>
+            Iniciar Sesión
+          </span>
+          <mat-spinner *ngIf="loading" diameter="22"></mat-spinner>
+        </button>
+      </form>
+
+      <div class="login-hint">
+        <mat-icon>info</mat-icon>
+        <span>admin / admin123 &nbsp;|&nbsp; analyst / analyst123</span>
+      </div>
+    </div>
+
+    <p class="login-footer">MineGraph Analytics Platform &copy; 2024 — Neo4j Powered</p>
+  </div>
+</div>

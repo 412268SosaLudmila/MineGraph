@@ -1,0 +1,141 @@
+<div class="players-page">
+
+  <!-- Header -->
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1>Gestión de <span class="gradient-text">Jugadores</span></h1>
+      <p class="page-sub">{{ dataSource.data.length }} jugadores registrados en el servidor</p>
+    </div>
+    <div class="header-actions">
+      <div class="search-wrapper">
+        <mat-icon class="s-icon">search</mat-icon>
+        <input class="mg-input" placeholder="Buscar jugador..." [(ngModel)]="searchQuery"
+               (input)="applyFilter(searchQuery)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats mini cards -->
+  <div class="mini-stats animate-fade-in-up delay-1">
+    <div class="mini-stat" *ngFor="let stat of [
+      {label:'Top Killer', value: topPvP[0]?.nickname || '—', icon:'gps_fixed', color:'#ff4757'},
+      {label:'Más Conectado', value: masConectados[0]?.nickname || '—', icon:'hub', color:'#6c63ff'},
+      {label:'Más Influyente', value: masInfluyentes[0]?.nickname || '—', icon:'stars', color:'#ffd700'},
+      {label:'Mayor KD', value: (topPvP[0]?.kdRatio || 0) + '', icon:'military_tech', color:'#00ff88'}
+    ]">
+      <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
+      <div>
+        <div class="mini-val" [style.color]="stat.color">{{ stat.value }}</div>
+        <div class="mini-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar animate-fade-in-up delay-2">
+    <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="setTab('all')">
+      <mat-icon>people</mat-icon> Todos
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'online'" (click)="setTab('online')">
+      <span class="online-dot"></span> Online
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'pvp'" (click)="setTab('pvp')">
+      <mat-icon>gps_fixed</mat-icon> Ranking PvP
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="mg-card animate-fade-in-up delay-3" style="padding: 0; overflow: hidden">
+    <div *ngIf="loading" class="table-loading">
+      <div class="mg-spinner"></div>
+    </div>
+    <table mat-table [dataSource]="dataSource" matSort class="mg-table players-table" *ngIf="!loading">
+
+      <!-- Rank -->
+      <ng-container matColumnDef="rank">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header style="width:60px">#</th>
+        <td mat-cell *matCellDef="let j; let i = index">
+          <span class="rank-num">{{ i + 1 }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Nickname -->
+      <ng-container matColumnDef="nickname">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Jugador</th>
+        <td mat-cell *matCellDef="let j">
+          <div class="player-cell">
+            <div class="player-avatar" [class.online]="j.estadoOnline"
+                 [style.background]="getAvatarColor(j.nickname)">
+              {{ getInitials(j.nickname) }}
+            </div>
+            <div>
+              <div class="nick">{{ j.nickname }}</div>
+              <div class="titulo">{{ j.titulo }}</div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Nivel -->
+      <ng-container matColumnDef="nivel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel</th>
+        <td mat-cell *matCellDef="let j">
+          <div class="nivel-cell">
+            <span class="nivel-badge">{{ j.nivel }}</span>
+            <div class="nivel-bar">
+              <div class="nivel-fill" [style.width.%]="(j.nivel % 10) * 10"></div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Clan -->
+      <ng-container matColumnDef="clan">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Clan</th>
+        <td mat-cell *matCellDef="let j">
+          <span class="clan-chip" *ngIf="j.clanNombre; else noClan">{{ j.clanNombre }}</span>
+          <ng-template #noClan><span class="no-clan">Sin clan</span></ng-template>
+        </td>
+      </ng-container>
+
+      <!-- KD -->
+      <ng-container matColumnDef="kd">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>K/D</th>
+        <td mat-cell *matCellDef="let j">
+          <span class="kd-val" [class]="'kd-' + getKDClass(j.kdRatio)">{{ j.kdRatio }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Monedas -->
+      <ng-container matColumnDef="monedas">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Monedas</th>
+        <td mat-cell *matCellDef="let j">
+          <span class="coins-val">{{ formatNum(j.monedas) }} ⬡</span>
+        </td>
+      </ng-container>
+
+      <!-- Reputación -->
+      <ng-container matColumnDef="reputacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Reputación</th>
+        <td mat-cell *matCellDef="let j">
+          <span class="rep-val" [class]="getReputacionClass(j.reputacion)">{{ j.reputacion }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let j">
+          <span class="badge" [class]="j.estadoOnline ? 'badge-online' : 'badge-offline'">
+            {{ j.estadoOnline ? 'Online' : 'Offline' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="player-row-hover"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[15, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+
+</div>

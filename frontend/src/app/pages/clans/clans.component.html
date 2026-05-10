@@ -1,0 +1,120 @@
+<div class="clans-page">
+
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1>Gestión de <span class="gradient-text">Clanes</span></h1>
+      <p class="page-sub">{{ clans.length }} clanes activos · {{ enGuerra.length }} en guerra</p>
+    </div>
+    <div class="header-badges">
+      <span class="info-badge war" *ngIf="enGuerra.length">
+        <mat-icon>local_fire_department</mat-icon> {{ enGuerra.length }} guerras activas
+      </span>
+    </div>
+  </div>
+
+  <!-- Top row: charts + war list -->
+  <div class="top-row animate-fade-in-up delay-1">
+    <div class="mg-card chart-card">
+      <h3 class="card-title"><mat-icon style="color:#ffd700">bar_chart</mat-icon> Riqueza por Clan</h3>
+      <div style="height: 280px; padding-top: 8px">
+        <canvas baseChart [data]="riquezaChartData" [options]="riquezaOptions" type="bar"></canvas>
+      </div>
+    </div>
+
+    <div class="mg-card war-card">
+      <h3 class="card-title"><mat-icon style="color:#ff4757">local_fire_department</mat-icon> Clanes en Guerra</h3>
+      <div class="war-list" *ngIf="enGuerra.length; else noWar">
+        <div class="war-item" *ngFor="let c of enGuerra">
+          <div class="clan-badge-big" [style.background]="c.color + '22'" [style.border-color]="c.color + '55'">
+            <span [style.color]="c.color">{{ c.tag }}</span>
+          </div>
+          <div class="war-info">
+            <span class="war-name">{{ c.nombre }}</span>
+            <span class="war-meta">{{ c.guerrasActivas }} guerra(s) activa(s)</span>
+          </div>
+          <div class="war-power">
+            <mat-icon style="font-size:14px; color:#ff4757">whatshot</mat-icon>
+            <span>{{ c.victorias }}V / {{ c.derrotas }}D</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noWar>
+        <div class="empty-state">
+          <mat-icon>peace</mat-icon>
+          <p>No hay guerras activas</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar animate-fade-in-up delay-2">
+    <button class="tab-btn" [class.active]="activeTab==='all'" (click)="setTab('all')">
+      <mat-icon>shield</mat-icon> Todos ({{ clans.length }})
+    </button>
+    <button class="tab-btn" [class.active]="activeTab==='dominantes'" (click)="setTab('dominantes')">
+      <mat-icon>emoji_events</mat-icon> Dominantes
+    </button>
+    <button class="tab-btn" [class.active]="activeTab==='guerra'" (click)="setTab('guerra')">
+      <mat-icon>local_fire_department</mat-icon> En Guerra
+    </button>
+  </div>
+
+  <!-- Clans Grid -->
+  <div class="clans-grid animate-fade-in-up delay-3" *ngIf="!loading">
+    <div class="clan-card mg-card"
+         *ngFor="let c of displayedClans"
+         [class.selected]="selectedClan?.id === c.id"
+         (click)="selectClan(c)"
+         [style.--clan-color]="c.color">
+
+      <div class="clan-card-top">
+        <div class="clan-badge" [style.background]="c.color + '18'" [style.border-color]="c.color + '50'">
+          <span [style.color]="c.color">{{ c.tag }}</span>
+        </div>
+        <div class="clan-rank-badge">#{{ c.ranking }}</div>
+        <div class="clan-war-badge" *ngIf="c.guerrasActivas > 0">
+          <mat-icon>local_fire_department</mat-icon>
+        </div>
+      </div>
+
+      <h3 class="clan-name">{{ c.nombre }}</h3>
+      <p class="clan-desc">{{ c.descripcion }}</p>
+
+      <div class="clan-stats-row">
+        <div class="clan-stat">
+          <span class="cs-val" style="color:#a855f7">{{ c.cantidadMiembros }}</span>
+          <span class="cs-label">Miembros</span>
+        </div>
+        <div class="clan-stat">
+          <span class="cs-val" style="color:#ffd700">{{ formatNum(c.riqueza) }} ⬡</span>
+          <span class="cs-label">Riqueza</span>
+        </div>
+        <div class="clan-stat">
+          <span class="cs-val" style="color:#00ff88">{{ getWinRate(c) }}%</span>
+          <span class="cs-label">Win Rate</span>
+        </div>
+      </div>
+
+      <div class="clan-winrate-bar">
+        <div class="winrate-fill" [style.width.%]="getWinRate(c)" [style.background]="c.color"></div>
+      </div>
+
+      <div class="clan-footer">
+        <span class="clan-level">
+          <mat-icon style="font-size:13px">upgrade</mat-icon> Nivel {{ c.nivel }}
+        </span>
+        <span class="clan-terr">
+          <mat-icon style="font-size:13px">location_on</mat-icon> {{ c.territoriosControlados }} territorios
+        </span>
+        <span class="clan-allies" *ngIf="c.totalAliados > 0" style="color: #00d4ff">
+          <mat-icon style="font-size:13px">handshake</mat-icon> {{ c.totalAliados }} aliados
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-center" *ngIf="loading">
+    <div class="mg-spinner"></div>
+  </div>
+</div>

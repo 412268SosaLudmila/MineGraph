@@ -1,0 +1,92 @@
+<div class="events-page">
+  <div class="page-header animate-fade-in-up">
+    <div>
+      <h1>Eventos del <span class="gradient-text">Servidor</span></h1>
+      <p class="page-sub">{{ eventos.length }} eventos · {{ activos.length }} activos ahora</p>
+    </div>
+    <div class="active-count" *ngIf="activos.length">
+      <span class="live-dot"></span>
+      {{ activos.length }} eventos LIVE
+    </div>
+  </div>
+
+  <!-- Active Events Banner -->
+  <div class="active-banner animate-fade-in-up delay-1" *ngIf="activos.length">
+    <div class="banner-label"><mat-icon>radio_button_checked</mat-icon> EN CURSO</div>
+    <div class="active-events-scroll">
+      <div class="active-event-chip" *ngFor="let e of activos"
+           [style.--tipo-color]="getTipoColor(e.tipo)">
+        <mat-icon [style.color]="getTipoColor(e.tipo)">{{ getTipoIcon(e.tipo) }}</mat-icon>
+        <span>{{ e.nombre }}</span>
+        <span class="chip-region">{{ e.region }}</span>
+        <span class="chip-reward">{{ formatReward(e.recompensa) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar animate-fade-in-up delay-2">
+    <button class="filter-btn" *ngFor="let t of tipos"
+            [class.active]="activeFilter === t"
+            (click)="activeFilter = t">
+      <mat-icon *ngIf="t !== 'all'">{{ getTipoIcon(t) }}</mat-icon>
+      <mat-icon *ngIf="t === 'all'">apps</mat-icon>
+      {{ t === 'all' ? 'Todos' : t }}
+    </button>
+  </div>
+
+  <!-- Events Grid -->
+  <div class="events-grid animate-fade-in-up delay-3" *ngIf="!loading">
+    <div class="event-card mg-card" *ngFor="let e of filtered; let i = index"
+         [class.active-event]="e.activo"
+         [style.--color]="getTipoColor(e.tipo)"
+         [class]="'animate-fade-in-up delay-' + ((i % 6) + 1)">
+
+      <div class="event-card-top">
+        <div class="event-type-icon" [style.background]="getTipoColor(e.tipo) + '20'">
+          <mat-icon [style.color]="getTipoColor(e.tipo)">{{ getTipoIcon(e.tipo) }}</mat-icon>
+        </div>
+        <span class="badge" [ngClass]="getBadgeClass(e.tipo)">{{ e.tipo }}</span>
+        <span class="badge badge-online" *ngIf="e.activo" style="margin-left:auto">● LIVE</span>
+        <span class="badge badge-offline" *ngIf="!e.activo" style="margin-left:auto">Finalizado</span>
+      </div>
+
+      <h3 class="event-name">{{ e.nombre }}</h3>
+      <p class="event-desc">{{ e.descripcion }}</p>
+
+      <div class="event-meta-grid">
+        <div class="meta-item">
+          <mat-icon>location_on</mat-icon>
+          <span>{{ e.region }}</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>people</mat-icon>
+          <span>{{ e.participantes }} jugadores</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ e.duracionMinutos }}min</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ formatDate(e.fecha) }}</span>
+        </div>
+      </div>
+
+      <div class="event-footer">
+        <div class="event-reward" [style.color]="getTipoColor(e.tipo)">
+          <mat-icon>monetization_on</mat-icon>
+          <span>{{ formatReward(e.recompensa) }}</span>
+        </div>
+        <div class="event-winner" *ngIf="e.ganador">
+          <mat-icon style="color:#ffd700">emoji_events</mat-icon>
+          <span>{{ e.ganador }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-center" *ngIf="loading">
+    <div class="mg-spinner"></div>
+  </div>
+</div>
