@@ -4,9 +4,14 @@
       <h1>Eventos del <span class="gradient-text">Servidor</span></h1>
       <p class="page-sub">{{ eventos.length }} eventos · {{ activos.length }} activos ahora</p>
     </div>
-    <div class="active-count" *ngIf="activos.length">
-      <span class="live-dot"></span>
-      {{ activos.length }} eventos LIVE
+    <div class="header-right">
+      <div class="active-count" *ngIf="activos.length">
+        <span class="live-dot"></span>
+        {{ activos.length }} eventos LIVE
+      </div>
+      <button class="btn-primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon> Nuevo Evento
+      </button>
     </div>
   </div>
 
@@ -83,10 +88,79 @@
           <span>{{ e.ganador }}</span>
         </div>
       </div>
+      <div class="event-actions">
+        <button class="btn-icon-sm" title="Editar" (click)="openEdit(e, $event)"><mat-icon>edit</mat-icon></button>
+        <button class="btn-icon-sm danger" title="Eliminar" (click)="deleteEvento(e, $event)"><mat-icon>delete</mat-icon></button>
+      </div>
     </div>
   </div>
 
   <div class="loading-center" *ngIf="loading">
     <div class="mg-spinner"></div>
+  </div>
+</div>
+
+<!-- ═══ Modal Crear/Editar Evento ═══ -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="mc-block-icon">🎮</span>
+        {{ editMode ? 'Editar Evento' : 'Nuevo Evento' }}
+      </div>
+      <button class="modal-close" (click)="showModal=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nombre *</label>
+          <input class="mg-input" [(ngModel)]="form.nombre" placeholder="Torneo del Fin">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select class="mg-input" [(ngModel)]="form.tipo">
+            <option *ngFor="let t of ['PVP','BOSS','RAID','TORNEO','EXPLORACIÓN']" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Región</label>
+          <input class="mg-input" [(ngModel)]="form.region" placeholder="Spawn">
+        </div>
+        <div class="form-group full">
+          <label>Descripción</label>
+          <input class="mg-input" [(ngModel)]="form.descripcion" placeholder="Descripción del evento...">
+        </div>
+        <div class="form-group">
+          <label>Duración (min)</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.duracionMinutos" min="1">
+        </div>
+        <div class="form-group">
+          <label>Participantes</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.participantes" min="0">
+        </div>
+        <div class="form-group">
+          <label>Recompensa ⬡</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.recompensa" min="0">
+        </div>
+        <div class="form-group">
+          <label>Ganador</label>
+          <input class="mg-input" [(ngModel)]="form.ganador" placeholder="Nickname del ganador">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select class="mg-input" [(ngModel)]="form.activo">
+            <option [ngValue]="true">🟢 Activo</option>
+            <option [ngValue]="false">🔴 Finalizado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showModal=false">Cancelar</button>
+      <button class="btn-primary" (click)="saveEvento()" [disabled]="saving">
+        <mat-icon>{{ saving ? 'hourglass_empty' : 'save' }}</mat-icon>
+        {{ saving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
   </div>
 </div>

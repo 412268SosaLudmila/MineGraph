@@ -9,10 +9,14 @@ export class EventoService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Evento[]> { return this.http.get<Evento[]>(this.API); }
-  getById(id: number): Observable<Evento> { return this.http.get<Evento>(`${this.API}/${id}`); }
-  getActivos(): Observable<Evento[]> { return this.http.get<Evento[]>(`${this.API}/activos`); }
-  getByTipo(tipo: string): Observable<Evento[]> { return this.http.get<Evento[]>(`${this.API}/tipo/${tipo}`); }
-  getRecientes(limit = 20): Observable<Evento[]> { return this.http.get<Evento[]>(`${this.API}/recientes?limit=${limit}`); }
-  getFrecuentes(): Observable<any[]> { return this.http.get<any[]>(`${this.API}/frecuentes`); }
+  getAll(): Observable<Evento[]>                         { return this.http.get<Evento[]>(this.API); }
+  getById(id: number): Observable<Evento>                { return this.http.get<Evento>(`${this.API}/${id}`); }
+  getActivos(): Observable<Evento[]>                     { return this.http.get<Evento[]>(`${this.API}/activos`); }
+  getByTipo(tipo: string): Observable<Evento[]>          { return this.http.get<Evento[]>(`${this.API}/tipo/${tipo}`); }
+  getRecientes(limit = 10): Observable<Evento[]>         { return this.http.get<Evento[]>(`${this.API}/recientes?limit=${limit}`); }
+  getFrecuentes(): Observable<any[]>                     { return this.http.get<any[]>(`${this.API}/frecuentes`); }
+
+  create(data: Partial<Evento>): Observable<Evento>             { return this.http.post<Evento>(this.API, data); }
+  update(id: number, data: Partial<Evento>): Observable<Evento> { return this.http.put<Evento>(`${this.API}/${id}`, data); }
+  delete(id: number): Observable<void>                          { return this.http.delete<void>(`${this.API}/${id}`); }
 }

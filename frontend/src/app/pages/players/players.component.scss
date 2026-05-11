@@ -60,3 +60,77 @@
 .rep-legendary { color: #ffd700; } .rep-high { color: #00ff88; } .rep-mid { color: #00d4ff; }
 .rep-neutral { color: #718096; } .rep-negative { color: #ff4757; }
 .player-row-hover:hover td { background: rgba(108,99,255,0.05); }
+
+// ─── Minecraft Avatar ─────────────────────────────────────────────────────
+.mc-avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  .mc-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: block;
+    image-rendering: pixelated;
+    border: 1px solid rgba(108,99,255,0.3);
+    background: rgba(14,16,28,0.8);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover { transform: scale(1.15); box-shadow: 0 0 12px rgba(108,99,255,0.5); }
+  }
+
+  .mc-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    border: 1px solid rgba(108,99,255,0.3);
+  }
+
+  .online-ring {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid #08090f;
+    background: #00ff88;
+    box-shadow: 0 0 6px #00ff88;
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.2); }
+}
+
+// ─── Action buttons column ────────────────────────────────────────────────
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// ─── Clan cell with unassign button ──────────────────────────────────────
+.clan-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ─── Header actions ───────────────────────────────────────────────────────
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

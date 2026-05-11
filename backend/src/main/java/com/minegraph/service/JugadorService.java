@@ -1,5 +1,6 @@
 package com.minegraph.service;
 
+import com.minegraph.dto.request.JugadorRequest;
 import com.minegraph.dto.response.GrafoData;
 import com.minegraph.dto.response.JugadorResponse;
 import com.minegraph.entity.Jugador;
@@ -9,6 +10,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,116 @@ public class JugadorService {
     public List<JugadorResponse> search(String query) {
         String pattern = "(?i).*" + query + ".*";
         return mapper.toResponseList(jugadorRepository.searchByNickname(pattern));
+    }
+
+    // ─── CRUD ────────────────────────────────────────────────────────────────
+
+    @Transactional
+    public JugadorResponse create(JugadorRequest req) {
+        Jugador j = Jugador.builder()
+                .nickname(req.getNickname())
+                .nivel(req.getNivel() != null ? req.getNivel() : 1)
+                .experiencia(req.getExperiencia() != null ? req.getExperiencia() : 0L)
+                .estadoOnline(req.getEstadoOnline() != null ? req.getEstadoOnline() : false)
+                .monedas(req.getMonedas() != null ? req.getMonedas() : 0.0)
+                .reputacion(req.getReputacion() != null ? req.getReputacion() : 0)
+                .kills(req.getKills() != null ? req.getKills() : 0)
+                .muertes(req.getMuertes() != null ? req.getMuertes() : 0)
+                .horasJugadas(req.getHorasJugadas() != null ? req.getHorasJugadas() : 0.0)
+                .titulo(req.getTitulo() != null ? req.getTitulo() : "Novato")
+                .fechaRegistro(LocalDateTime.now())
+                .build();
+        return mapper.toResponse(jugadorRepository.save(j));
+    }
+
+    @Transactional
+    public Optional<JugadorResponse> update(Long id, JugadorRequest req) {
+        neo4jClient.query(
+            "MATCH (j:Jugador) WHERE id(j) = $id " +
+            "SET j.nickname      = COALESCE($nickname, j.nickname), " +
+            "    j.nivel         = COALESCE($nivel, j.nivel), " +
+            "    j.experiencia   = COALESCE($experiencia, j.experiencia), " +
+            "    j.estadoOnline  = COALESCE($estadoOnline, j.estadoOnline), " +
+            "    j.monedas       = COALESCE($monedas, j.monedas), " +
+            "    j.reputacion    = COALESCE($reputacion, j.reputacion), " +
+            "    j.kills         = COALESCE($kills, j.kills), " +
+            "    j.muertes       = COALESCE($muertes, j.muertes), " +
+            "    j.horasJugadas  = COALESCE($horasJugadas, j.horasJugadas), " +
+            "    j.titulo        = COALESCE($titulo, j.titulo)")
+            .bind(id).to("id")
+            .bind(req.getNickname()).to("nickname")
+            .bind(req.getNivel()).to("nivel")
+            .bind(req.getExperiencia()).to("experiencia")
+            .bind(req.getEstadoOnline()).to("estadoOnline")
+            .bind(req.getMonedas()).to("monedas")
+            .bind(req.getReputacion()).to("reputacion")
+            .bind(req.getKills()).to("kills")
+            .bind(req.getMuertes()).to("muertes")
+            .bind(req.getHorasJugadas()).to("horasJugadas")
+            .bind(req.getTitulo()).to("titulo")
+            .run();
+        return jugadorRepository.findById(id).map(mapper::toResponse);
+    }
+
+    @Transactional
+    public boolean delete(Long id) {
+        if (!jugadorRepository.existsById(id)) return false;
+        neo4jClient.query("MATCH (j:Jugador) WHERE id(j) = $id DETACH DELETE j")
+                .bind(id).to("id").run();
+        return true;
+    }
+
+    // ─── Relaciones ──────────────────────────────────────────────────────────
+
+    @Transactional
+    public void addAmigo(Long id, Long amigoId) {
+        neo4jClient.query(
+            "MATCH (j1:Jugador) WHERE id(j1) = $id " +
+            "MATCH (j2:Jugador) WHERE id(j2) = $amigoId " +
+            "MERGE (j1)-[:AMIGO_DE]->(j2)")
+            .bind(id).to("id").bind(amigoId).to("amigoId").run();
+    }
+
+    @Transactional
+    public void removeAmigo(Long id, Long amigoId) {
+        neo4jClient.query(
+            "MATCH (j1:Jugador)-[r:AMIGO_DE]->(j2:Jugador) " +
+            "WHERE id(j1) = $id AND id(j2) = $amigoId DELETE r")
+            .bind(id).to("id").bind(amigoId).to("amigoId").run();
+    }
+
+    @Transactional
+    public void addEnemigo(Long id, Long enemigoId) {
+        neo4jClient.query(
+            "MATCH (j1:Jugador) WHERE id(j1) = $id " +
+            "MATCH (j2:Jugador) WHERE id(j2) = $enemigoId " +
+            "MERGE (j1)-[:ENEMIGO_DE]->(j2)")
+            .bind(id).to("id").bind(enemigoId).to("enemigoId").run();
+    }
+
+    @Transactional
+    public void removeEnemigo(Long id, Long enemigoId) {
+        neo4jClient.query(
+            "MATCH (j1:Jugador)-[r:ENEMIGO_DE]->(j2:Jugador) " +
+            "WHERE id(j1) = $id AND id(j2) = $enemigoId DELETE r")
+            .bind(id).to("id").bind(enemigoId).to("enemigoId").run();
+    }
+
+    @Transactional
+    public void asignarClan(Long id, Long clanId) {
+        neo4jClient.query(
+            "MATCH (j:Jugador) WHERE id(j) = $id " +
+            "OPTIONAL MATCH (j)-[old:PERTENECE_A]->(:Clan) DELETE old " +
+            "WITH j MATCH (c:Clan) WHERE id(c) = $clanId " +
+            "MERGE (j)-[:PERTENECE_A]->(c)")
+            .bind(id).to("id").bind(clanId).to("clanId").run();
+    }
+
+    @Transactional
+    public void quitarClan(Long id) {
+        neo4jClient.query(
+            "MATCH (j:Jugador)-[r:PERTENECE_A]->(:Clan) WHERE id(j) = $id DELETE r")
+            .bind(id).to("id").run();
     }
 
     public GrafoData buildGrafoJugadores() {

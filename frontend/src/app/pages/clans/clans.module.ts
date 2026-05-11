@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { ClansComponent } from './clans.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +16,7 @@ const routes: Routes = [{ path: '', component: ClansComponent }];
 @NgModule({
   declarations: [ClansComponent],
   imports: [
-    CommonModule, RouterModule.forChild(routes),
+    CommonModule, FormsModule, RouterModule.forChild(routes),
     MatIconModule, MatTableModule, MatPaginatorModule,
     MatSortModule, MatProgressBarModule, MatTooltipModule, NgChartsModule
   ]

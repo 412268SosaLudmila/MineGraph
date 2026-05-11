@@ -1,11 +1,13 @@
 package com.minegraph.controller;
 
+import com.minegraph.dto.request.ClanRequest;
 import com.minegraph.dto.response.ClanResponse;
 import com.minegraph.service.ClanService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clanes")
@@ -47,5 +49,40 @@ public class ClanController {
     @GetMapping("/comunidad")
     public ResponseEntity<List<ClanResponse>> nucleoComunidad() {
         return ResponseEntity.ok(clanService.findNucleoComunidad());
+    }
+
+    // ─── CRUD ─────────────────────────────────────────────────────────────────
+
+    @PostMapping
+    public ResponseEntity<ClanResponse> create(@RequestBody ClanRequest req) {
+        return ResponseEntity.ok(clanService.create(req));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClanResponse> update(@PathVariable Long id, @RequestBody ClanRequest req) {
+        return clanService.update(id, req)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return clanService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+    // ─── Relaciones ──────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/alianza/{id2}")
+    public ResponseEntity<Map<String, String>> alianza(@PathVariable Long id, @PathVariable Long id2) {
+        clanService.declararAlianza(id, id2);
+        return ResponseEntity.ok(Map.of("message", "Alianza declarada"));
+    }
+
+    @PostMapping("/{id}/guerra/{id2}")
+    public ResponseEntity<Map<String, String>> guerra(@PathVariable Long id, @PathVariable Long id2) {
+        clanService.declararGuerra(id, id2);
+        return ResponseEntity.ok(Map.of("message", "Guerra declarada"));
     }
 }

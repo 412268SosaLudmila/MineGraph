@@ -9,6 +9,9 @@
       <span class="info-badge war" *ngIf="enGuerra.length">
         <mat-icon>local_fire_department</mat-icon> {{ enGuerra.length }} guerras activas
       </span>
+      <button class="btn-primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon> Nuevo Clan
+      </button>
     </div>
   </div>
 
@@ -111,10 +114,131 @@
           <mat-icon style="font-size:13px">handshake</mat-icon> {{ c.totalAliados }} aliados
         </span>
       </div>
+      <div class="clan-actions">
+        <button class="btn-icon-sm" title="Editar" (click)="openEdit(c, $event)"><mat-icon>edit</mat-icon></button>
+        <button class="btn-icon-sm accent" title="Alianza/Guerra" (click)="openRelModal(c, $event)"><mat-icon>handshake</mat-icon></button>
+        <button class="btn-icon-sm danger" title="Eliminar" (click)="deleteClan(c, $event)"><mat-icon>delete</mat-icon></button>
+      </div>
     </div>
   </div>
 
   <div class="loading-center" *ngIf="loading">
     <div class="mg-spinner"></div>
+  </div>
+</div>
+
+<!-- ═══ Modal Crear/Editar Clan ═══ -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="mc-block-icon">🛡️</span>
+        {{ editMode ? 'Editar Clan' : 'Nuevo Clan' }}
+      </div>
+      <button class="modal-close" (click)="showModal=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input class="mg-input" [(ngModel)]="form.nombre" placeholder="Caballeros del Caos">
+        </div>
+        <div class="form-group">
+          <label>Tag (4 chars)</label>
+          <input class="mg-input" [(ngModel)]="form.tag" placeholder="KHOS" maxlength="4">
+        </div>
+        <div class="form-group full">
+          <label>Descripción</label>
+          <input class="mg-input" [(ngModel)]="form.descripcion" placeholder="Un clan legendario...">
+        </div>
+        <div class="form-group">
+          <label>Nivel</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.nivel" min="1">
+        </div>
+        <div class="form-group">
+          <label>Miembros</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.cantidadMiembros" min="0">
+        </div>
+        <div class="form-group">
+          <label>Victorias</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.victorias" min="0">
+        </div>
+        <div class="form-group">
+          <label>Derrotas</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.derrotas" min="0">
+        </div>
+        <div class="form-group">
+          <label>Territorios</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.territoriosControlados" min="0">
+        </div>
+        <div class="form-group">
+          <label>Riqueza ⬡</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.riqueza" min="0">
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <div class="color-picker-row">
+            <input type="color" [(ngModel)]="form.color" class="color-input">
+            <div class="color-presets">
+              <span *ngFor="let col of COLORS" class="color-dot"
+                    [style.background]="col" (click)="form.color=col"
+                    [class.selected]="form.color===col"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showModal=false">Cancelar</button>
+      <button class="btn-primary" (click)="saveClan()" [disabled]="saving">
+        <mat-icon>{{ saving ? 'hourglass_empty' : 'save' }}</mat-icon>
+        {{ saving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Alianza/Guerra ═══ -->
+<div class="modal-overlay" *ngIf="showRelModal" (click)="showRelModal=false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="mc-block-icon">⚔️</span>
+        Diplomacia — <span style="color:#a78bfa">{{ selectedClan?.nombre }}</span>
+      </div>
+      <button class="modal-close" (click)="showRelModal=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Tipo de acción</label>
+          <div class="rel-type-btns">
+            <button class="rel-type-btn" [class.active]="relForm.tipo==='alianza'" (click)="relForm.tipo='alianza'">
+              🤝 Declarar Alianza
+            </button>
+            <button class="rel-type-btn war" [class.active]="relForm.tipo==='guerra'" (click)="relForm.tipo='guerra'">
+              ⚔️ Declarar Guerra
+            </button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Clan objetivo</label>
+          <select class="mg-input" [(ngModel)]="relForm.targetId">
+            <option [ngValue]="null">— Seleccionar clan —</option>
+            <option *ngFor="let c of clans" [ngValue]="c.id" [disabled]="c.id===selectedClan?.id">
+              [{{ c.tag }}] {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showRelModal=false">Cancelar</button>
+      <button class="btn-primary" [class.btn-danger]="relForm.tipo==='guerra'"
+              (click)="saveRelClan()" [disabled]="!relForm.targetId">
+        <mat-icon>{{ relForm.tipo==='guerra' ? 'local_fire_department' : 'handshake' }}</mat-icon>
+        {{ relForm.tipo==='alianza' ? 'Sellar Alianza' : 'Declarar Guerra' }}
+      </button>
+    </div>
   </div>
 </div>

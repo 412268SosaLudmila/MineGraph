@@ -12,6 +12,9 @@
         <input class="mg-input" placeholder="Buscar jugador..." [(ngModel)]="searchQuery"
                (input)="applyFilter(searchQuery)">
       </div>
+      <button class="btn-primary" (click)="openCreate()">
+        <mat-icon>person_add</mat-icon> Nuevo Jugador
+      </button>
     </div>
   </div>
 
@@ -46,27 +49,31 @@
 
   <!-- Table -->
   <div class="mg-card animate-fade-in-up delay-3" style="padding: 0; overflow: hidden">
-    <div *ngIf="loading" class="table-loading">
-      <div class="mg-spinner"></div>
-    </div>
+    <div *ngIf="loading" class="table-loading"><div class="mg-spinner"></div></div>
     <table mat-table [dataSource]="dataSource" matSort class="mg-table players-table" *ngIf="!loading">
 
       <!-- Rank -->
       <ng-container matColumnDef="rank">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header style="width:60px">#</th>
-        <td mat-cell *matCellDef="let j; let i = index">
-          <span class="rank-num">{{ i + 1 }}</span>
-        </td>
+        <th mat-header-cell *matHeaderCellDef style="width:50px">#</th>
+        <td mat-cell *matCellDef="let j; let i = index"><span class="rank-num">{{ i + 1 }}</span></td>
       </ng-container>
 
-      <!-- Nickname -->
+      <!-- Nickname con avatar Minecraft -->
       <ng-container matColumnDef="nickname">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Jugador</th>
         <td mat-cell *matCellDef="let j">
           <div class="player-cell">
-            <div class="player-avatar" [class.online]="j.estadoOnline"
-                 [style.background]="getAvatarColor(j.nickname)">
-              {{ getInitials(j.nickname) }}
+            <div class="mc-avatar-wrap" [class.online]="j.estadoOnline">
+              <img *ngIf="!hasAvatarError(j.nickname)"
+                   [src]="getAvatarUrl(j.nickname)"
+                   (error)="onAvatarError(j.nickname)"
+                   class="mc-avatar" alt="skin">
+              <div *ngIf="hasAvatarError(j.nickname)"
+                   class="mc-avatar-fallback"
+                   [style.background]="getAvatarColor(j.nickname)">
+                {{ getInitials(j.nickname) }}
+              </div>
+              <span class="online-ring" *ngIf="j.estadoOnline"></span>
             </div>
             <div>
               <div class="nick">{{ j.nickname }}</div>
@@ -82,9 +89,7 @@
         <td mat-cell *matCellDef="let j">
           <div class="nivel-cell">
             <span class="nivel-badge">{{ j.nivel }}</span>
-            <div class="nivel-bar">
-              <div class="nivel-fill" [style.width.%]="(j.nivel % 10) * 10"></div>
-            </div>
+            <div class="nivel-bar"><div class="nivel-fill" [style.width.%]="(j.nivel % 10) * 10"></div></div>
           </div>
         </td>
       </ng-container>
@@ -93,8 +98,14 @@
       <ng-container matColumnDef="clan">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Clan</th>
         <td mat-cell *matCellDef="let j">
-          <span class="clan-chip" *ngIf="j.clanNombre; else noClan">{{ j.clanNombre }}</span>
-          <ng-template #noClan><span class="no-clan">Sin clan</span></ng-template>
+          <div class="clan-cell">
+            <span class="clan-chip" *ngIf="j.clanNombre; else noClan">{{ j.clanNombre }}</span>
+            <ng-template #noClan><span class="no-clan">Sin clan</span></ng-template>
+            <button *ngIf="j.clanNombre" class="btn-icon-sm danger" title="Quitar del clan"
+                    (click)="quitarClan(j, $event)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 
@@ -109,9 +120,7 @@
       <!-- Monedas -->
       <ng-container matColumnDef="monedas">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Monedas</th>
-        <td mat-cell *matCellDef="let j">
-          <span class="coins-val">{{ formatNum(j.monedas) }} ⬡</span>
-        </td>
+        <td mat-cell *matCellDef="let j"><span class="coins-val">{{ formatNum(j.monedas) }} ⬡</span></td>
       </ng-container>
 
       <!-- Reputación -->
@@ -132,10 +141,152 @@
         </td>
       </ng-container>
 
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef style="width:110px">Acciones</th>
+        <td mat-cell *matCellDef="let j">
+          <div class="action-btns">
+            <button class="btn-icon-sm" title="Editar" (click)="openEdit(j); $event.stopPropagation()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="btn-icon-sm accent" title="Relaciones" (click)="openRelModal(j, $event)">
+              <mat-icon>hub</mat-icon>
+            </button>
+            <button class="btn-icon-sm danger" title="Eliminar" (click)="deleteJugador(j, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="player-row-hover"></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[15, 25, 50]" showFirstLastButtons></mat-paginator>
   </div>
+</div>
 
+<!-- ═══ Modal Crear/Editar Jugador ═══ -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="mc-block-icon">🧱</span>
+        {{ editMode ? 'Editar Jugador' : 'Nuevo Jugador' }}
+      </div>
+      <button class="modal-close" (click)="showModal=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nickname *</label>
+          <input class="mg-input" [(ngModel)]="form.nickname" placeholder="Steve_Pro123">
+        </div>
+        <div class="form-group">
+          <label>Nivel</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.nivel" min="1" max="100">
+        </div>
+        <div class="form-group">
+          <label>Título</label>
+          <input class="mg-input" [(ngModel)]="form.titulo" placeholder="Novato">
+        </div>
+        <div class="form-group">
+          <label>Kills</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.kills" min="0">
+        </div>
+        <div class="form-group">
+          <label>Muertes</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.muertes" min="0">
+        </div>
+        <div class="form-group">
+          <label>Monedas ⬡</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.monedas" min="0">
+        </div>
+        <div class="form-group">
+          <label>Reputación</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.reputacion">
+        </div>
+        <div class="form-group">
+          <label>Horas jugadas</label>
+          <input class="mg-input" type="number" [(ngModel)]="form.horasJugadas" min="0">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select class="mg-input" [(ngModel)]="form.estadoOnline">
+            <option [ngValue]="true">🟢 Online</option>
+            <option [ngValue]="false">🔴 Offline</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showModal=false">Cancelar</button>
+      <button class="btn-primary" (click)="saveJugador()" [disabled]="saving">
+        <mat-icon>{{ saving ? 'hourglass_empty' : 'save' }}</mat-icon>
+        {{ saving ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Relaciones ═══ -->
+<div class="modal-overlay" *ngIf="showRelModal" (click)="showRelModal=false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="mc-block-icon">🔗</span>
+        Gestionar Relaciones — <span style="color:#a78bfa">{{ selectedJugador?.nickname }}</span>
+      </div>
+      <button class="modal-close" (click)="showRelModal=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Tipo de relación</label>
+          <div class="rel-type-btns">
+            <button class="rel-type-btn" [class.active]="relForm.tipo==='amigo'"
+                    (click)="relForm.tipo='amigo'">
+              🟢 Agregar Amigo
+            </button>
+            <button class="rel-type-btn" [class.active]="relForm.tipo==='enemigo'"
+                    (click)="relForm.tipo='enemigo'">
+              🔴 Agregar Enemigo
+            </button>
+            <button class="rel-type-btn" [class.active]="relForm.tipo==='clan'"
+                    (click)="relForm.tipo='clan'">
+              ⚔️ Asignar Clan
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group full" *ngIf="relForm.tipo !== 'clan'">
+          <label>Seleccionar jugador</label>
+          <select class="mg-input" [(ngModel)]="relForm.targetId">
+            <option [ngValue]="null">— Seleccionar —</option>
+            <option *ngFor="let j of dataSource.data"
+                    [ngValue]="j.id"
+                    [disabled]="j.id === selectedJugador?.id">
+              {{ j.nickname }} (Nv.{{ j.nivel }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group full" *ngIf="relForm.tipo === 'clan'">
+          <label>Seleccionar clan</label>
+          <select class="mg-input" [(ngModel)]="relForm.targetId">
+            <option [ngValue]="null">— Seleccionar —</option>
+            <option *ngFor="let c of clanes" [ngValue]="c.id">
+              [{{ c.tag }}] {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="showRelModal=false">Cancelar</button>
+      <button class="btn-primary" (click)="saveRelacion()" [disabled]="!relForm.targetId">
+        <mat-icon>add_link</mat-icon> Aplicar
+      </button>
+    </div>
+  </div>
 </div>

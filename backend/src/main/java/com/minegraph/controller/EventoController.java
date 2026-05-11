@@ -1,5 +1,6 @@
 package com.minegraph.controller;
 
+import com.minegraph.dto.request.EventoRequest;
 import com.minegraph.dto.response.EventoResponse;
 import com.minegraph.service.EventoService;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,26 @@ public class EventoController {
     @GetMapping("/frecuentes")
     public ResponseEntity<List<Map<String, Object>>> frecuentes() {
         return ResponseEntity.ok(eventoService.findFrecuentes());
+    }
+
+    // ─── CRUD ─────────────────────────────────────────────────────────────────
+
+    @PostMapping
+    public ResponseEntity<EventoResponse> create(@RequestBody EventoRequest req) {
+        return ResponseEntity.ok(eventoService.create(req));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventoResponse> update(@PathVariable Long id, @RequestBody EventoRequest req) {
+        return eventoService.update(id, req)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return eventoService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

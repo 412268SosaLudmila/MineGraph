@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EventsComponent } from './events.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,6 @@ const routes: Routes = [{ path: '', component: EventsComponent }];
 
 @NgModule({
   declarations: [EventsComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), MatIconModule, MatChipsModule, MatTooltipModule, NgChartsModule]
+  imports: [CommonModule, FormsModule, RouterModule.forChild(routes), MatIconModule, MatChipsModule, MatTooltipModule, NgChartsModule]
 })
 export class EventsModule {}

@@ -42,3 +42,15 @@
 .loading-center { display: flex; justify-content: center; padding: 80px; }
 @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.6} }
 @keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
+
+// ─── CRUD additions ───────────────────────────────────────────────────────
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.event-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
