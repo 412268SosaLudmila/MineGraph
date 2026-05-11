@@ -185,9 +185,9 @@
             </span></td>
             <td>
               <div class="player-row">
-                <div class="player-avatar" [class.online]="j.estadoOnline"
-                     [style.background]="getAvatarColor(j.nickname)">
-                  {{ getInitials(j.nickname) }}
+                <div class="mc-avatar-wrap" [class.online]="j.estadoOnline">
+                  <img [src]="getMcAvatar(j.nickname)" class="mc-avatar-head" [alt]="j.nickname">
+                  <span class="online-ring" *ngIf="j.estadoOnline"></span>
                 </div>
                 <div class="player-info">
                   <span class="player-nick">{{ j.nickname }}</span>
@@ -259,30 +259,43 @@
         </div>
         <a class="table-link" routerLink="/events">Ver todos</a>
       </div>
-      <div class="events-list">
-        <div class="event-item" *ngFor="let e of stats!.eventosRecientes">
-          <div class="event-type-dot" [ngClass]="getEventBadgeClass(e.tipo)"></div>
-          <div class="event-info">
-            <span class="event-name">{{ e.nombre }}</span>
-            <div class="event-meta">
+      <table class="mg-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Tipo</th>
+            <th>Jugadores</th>
+            <th>Recompensa</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of stats!.eventosRecientes | slice:0:5">
+            <td>
+              <div style="display:flex; align-items:center; gap:8px">
+                <div class="event-type-dot" [ngClass]="getEventBadgeClass(e.tipo)"></div>
+                <span style="font-size:13px; color:#e2e8f0; font-weight:500">{{ e.nombre }}</span>
+              </div>
+            </td>
+            <td>
               <span class="badge" [ngClass]="getEventBadgeClass(e.tipo)" style="font-size:10px; padding:2px 7px">
                 {{ e.tipo }}
               </span>
-              <span class="event-region">{{ e.region }}</span>
-              <span class="event-players">
-                <mat-icon style="font-size:12px">people</mat-icon>
+            </td>
+            <td>
+              <span style="font-family:'Orbitron',sans-serif; font-size:12px; color:var(--mg-primary)">
                 {{ e.participantes }}
               </span>
-            </div>
-          </div>
-          <div class="event-reward">
-            <span class="reward-val">{{ formatCurrency(e.recompensa) }}</span>
-            <span [class]="e.activo ? 'badge badge-online' : 'badge badge-offline'" style="font-size:9px">
-              {{ e.activo ? 'ACTIVO' : 'FIN' }}
-            </span>
-          </div>
-        </div>
-      </div>
+            </td>
+            <td><span class="reward-val">{{ formatCurrency(e.recompensa) }}</span></td>
+            <td>
+              <span [class]="e.activo ? 'badge badge-online' : 'badge badge-offline'" style="font-size:10px">
+                {{ e.activo ? 'ACTIVO' : 'FIN' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
@@ -302,9 +315,9 @@
         <div class="trader-rank" [class.rank-1]="i===0" [class.rank-2]="i===1" [class.rank-3]="i===2">
           {{ i < 3 ? ['🥇','🥈','🥉'][i] : '#'+(i+1) }}
         </div>
-        <div class="trader-avatar" [style.background]="getAvatarColor(j.nickname)"
-             [class.online]="j.estadoOnline">
-          {{ getInitials(j.nickname) }}
+        <div class="mc-avatar-wrap-lg" [class.online]="j.estadoOnline">
+          <img [src]="getMcAvatar(j.nickname)" class="mc-avatar-head-lg" [alt]="j.nickname">
+          <span class="online-ring" *ngIf="j.estadoOnline"></span>
         </div>
         <div class="trader-info">
           <span class="trader-nick">{{ j.nickname }}</span>

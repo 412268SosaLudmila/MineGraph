@@ -10,12 +10,12 @@
   <div class="login-container animate-fade-in-up">
     <!-- Logo -->
     <div class="login-logo">
-      <div class="logo-hexagon">
-        <span>⬡</span>
+      <div class="logo-block">
+        <img src="assets/grass-block.png" alt="MineGraph" class="logo-img">
       </div>
       <div class="logo-details">
         <h1 class="logo-title">Mine<span>Graph</span></h1>
-        <p class="logo-subtitle">Analytics Platform</p>
+        <p class="logo-subtitle">⛏ Analytics Platform</p>
       </div>
     </div>
 
@@ -58,12 +58,15 @@
           {{ error }}
         </div>
 
-        <button type="submit" class="login-btn" [disabled]="loading || form.invalid">
-          <span *ngIf="!loading">
-            <mat-icon>login</mat-icon>
-            Iniciar Sesión
+        <button type="submit" class="login-btn mc-btn" [disabled]="loading || form.invalid">
+          <span class="mc-btn-inner" *ngIf="!loading">
+            <span class="mc-btn-icon">⚔</span>
+            INICIAR SESIÓN
           </span>
-          <mat-spinner *ngIf="loading" diameter="22"></mat-spinner>
+          <span class="mc-btn-inner" *ngIf="loading">
+            <span class="mc-btn-icon spin-pick">⛏</span>
+            CARGANDO...
+          </span>
         </button>
       </form>
 

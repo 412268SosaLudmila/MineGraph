@@ -83,37 +83,41 @@
 .login-logo {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 
-  .logo-hexagon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #6c63ff, #00d4ff);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    box-shadow: 0 0 30px rgba(108,99,255,0.5), 0 0 60px rgba(108,99,255,0.2);
-    animation: logoPulse 2.5s ease-in-out infinite alternate;
+  .logo-block {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    position: relative;
+    filter: drop-shadow(0 0 16px rgba(93,158,62,0.6)) drop-shadow(0 0 32px rgba(93,158,62,0.3));
+    animation: logoBounce 2.5s ease-in-out infinite;
+
+    .logo-img {
+      width: 72px;
+      height: 72px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      display: block;
+    }
   }
 
   .logo-details {
     .logo-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 900;
       color: #e2e8f0;
       letter-spacing: 2px;
       line-height: 1;
-      span { color: #6c63ff; }
+      span { color: #5d9e3e; }
     }
     .logo-subtitle {
       font-size: 11px;
-      color: #4a5568;
+      color: #718096;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-top: 5px;
+      margin-top: 6px;
     }
   }
 }
@@ -244,38 +248,84 @@
   mat-icon { font-size: 16px; }
 }
 
-.login-btn {
+// ═══ Minecraft-style button ═══
+.mc-btn {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+  padding: 0;
+  background: transparent;
   border: none;
-  border-radius: 12px;
-  color: white;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.3s ease;
-  margin-top: 8px;
-  box-shadow: 0 4px 20px rgba(108,99,255,0.3);
+  margin-top: 12px;
+  position: relative;
+  outline: none;
 
-  mat-icon { font-size: 20px; }
+  // Minecraft button = outer dark border + main green body + inner highlight
+  .mc-btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 24px;
+    background: #5d9e3e;
+    border-top: 3px solid #87c057;
+    border-left: 3px solid #87c057;
+    border-right: 3px solid #3a7a28;
+    border-bottom: 3px solid #3a7a28;
+    outline: 3px solid #1a1a1a;
+    font-family: 'Minecraft', 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.6);
+    transition: filter 0.1s, transform 0.1s;
+    image-rendering: pixelated;
 
-  &:hover:not(:disabled) {
-    box-shadow: 0 8px 30px rgba(108,99,255,0.5);
-    transform: translateY(-1px);
+    .mc-btn-icon {
+      font-size: 20px;
+      filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.5));
+    }
+
+    .spin-pick {
+      display: inline-block;
+      animation: pickaxeSpin 0.6s linear infinite;
+    }
+  }
+
+  &:hover:not(:disabled) .mc-btn-inner {
+    background: #6ab347;
+    border-top-color: #98d068;
+    border-left-color: #98d068;
+    filter: brightness(1.08);
+  }
+
+  &:active:not(:disabled) .mc-btn-inner {
+    background: #4a8a2e;
+    border-top-color: #3a7a28;
+    border-left-color: #3a7a28;
+    border-right-color: #87c057;
+    border-bottom-color: #87c057;
+    transform: translateY(2px);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
+    .mc-btn-inner { background: #3a6a28; }
   }
+}
+
+@keyframes pickaxeSpin {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-30deg); }
+  75%  { transform: rotate(30deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes logoBounce {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
 }
 
 .login-hint {

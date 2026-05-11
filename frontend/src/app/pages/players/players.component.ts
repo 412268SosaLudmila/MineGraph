@@ -82,17 +82,25 @@ export class PlayersComponent implements OnInit {
 
   // ─── Avatar Minecraft ────────────────────────────────────────────────────
 
+  private readonly MC_AVATARS = [
+    'assets/avatars/steve.png',
+    'assets/avatars/alex.png',
+    'assets/avatars/villager.png',
+    'assets/avatars/enderman.png',
+    'assets/avatars/creeper.png',
+    'assets/avatars/skeleton.png',
+    'assets/avatars/zombie.png',
+    'assets/avatars/blaze.png',
+  ];
+
   getAvatarUrl(nick: string): string {
-    return `https://mc-heads.net/avatar/${encodeURIComponent(nick)}/40`;
+    let hash = 0;
+    for (const c of nick) hash = c.charCodeAt(0) + ((hash << 5) - hash);
+    return this.MC_AVATARS[Math.abs(hash) % this.MC_AVATARS.length];
   }
 
-  onAvatarError(nick: string): void {
-    this.avatarErrors.add(nick);
-  }
-
-  hasAvatarError(nick: string): boolean {
-    return this.avatarErrors.has(nick);
-  }
+  onAvatarError(nick: string): void { this.avatarErrors.add(nick); }
+  hasAvatarError(nick: string): boolean { return this.avatarErrors.has(nick); }
 
   getAvatarColor(nick: string): string {
     const colors = ['#6c63ff','#00d4ff','#ff6b6b','#ffd700','#00ff88','#a855f7','#ff9f43'];

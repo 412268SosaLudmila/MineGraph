@@ -242,13 +242,64 @@
   font-weight: 600;
 }
 
-// Events list
+// MC Avatar in tables
+.mc-avatar-wrap {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  .mc-avatar-head {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    image-rendering: pixelated;
+    border: 1px solid rgba(108,99,255,0.3);
+    display: block;
+  }
+
+  .online-ring {
+    position: absolute;
+    bottom: -2px; right: -2px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #00ff88;
+    border: 2px solid #08090f;
+    box-shadow: 0 0 5px #00ff88;
+  }
+}
+
+.mc-avatar-wrap-lg {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  .mc-avatar-head-lg {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    border: 1px solid rgba(108,99,255,0.3);
+    display: block;
+  }
+
+  .online-ring {
+    position: absolute;
+    bottom: -2px; right: -2px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: #00ff88;
+    border: 2px solid #08090f;
+    box-shadow: 0 0 6px #00ff88;
+  }
+}
+
+// Events list (kept for legacy, no scroll)
 .events-list {
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow-y: auto;
-  max-height: 340px;
 }
 
 .event-item {

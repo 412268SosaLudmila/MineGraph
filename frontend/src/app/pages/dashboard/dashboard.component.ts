@@ -197,4 +197,21 @@ export class DashboardComponent implements OnInit {
   getInitials(nickname: string): string {
     return nickname.substring(0, 2).toUpperCase();
   }
+
+  private readonly MC_AVATARS = [
+    'assets/avatars/steve.png',
+    'assets/avatars/alex.png',
+    'assets/avatars/villager.png',
+    'assets/avatars/enderman.png',
+    'assets/avatars/creeper.png',
+    'assets/avatars/skeleton.png',
+    'assets/avatars/zombie.png',
+    'assets/avatars/blaze.png',
+  ];
+
+  getMcAvatar(nickname: string): string {
+    let hash = 0;
+    for (const c of nickname) hash = c.charCodeAt(0) + ((hash << 5) - hash);
+    return this.MC_AVATARS[Math.abs(hash) % this.MC_AVATARS.length];
+  }
 }
