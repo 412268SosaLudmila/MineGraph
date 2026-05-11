@@ -354,6 +354,7 @@ body {
   font-size: 15px;
   transition: all 0.3s ease;
   outline: none;
+  width: 100%;
 
   &::placeholder { color: var(--mg-text-muted); }
 
@@ -362,6 +363,23 @@ body {
     box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
     background: rgba(108, 99, 255, 0.05);
   }
+}
+
+// Dark select dropdown
+select.mg-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+select.mg-input option {
+  background: #0d0e1d;
+  color: #e2e8f0;
 }
 
 // ===== PROGRESS BAR =====
@@ -397,6 +415,14 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+// ===== LOADING CENTER =====
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
 }
 
 // ===== ANGULAR MATERIAL OVERRIDES =====
@@ -642,26 +668,29 @@ body {
   }
 }
 
-.btn-primary {
-  &[disabled] {
-    opacity: 0.6;
+// btn-primary/secondary icon + disabled state patches
+.btn-primary, .btn-secondary {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+  }
+
+  &[disabled], &:disabled {
+    opacity: 0.55;
     cursor: not-allowed;
     pointer-events: none;
   }
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  mat-icon { font-size: 18px; }
 }
 
 .btn-danger {
   background: linear-gradient(135deg, #ff4757, #c0392b) !important;
+  color: #fff !important;
+  border: none !important;
   &:hover { box-shadow: 0 0 20px rgba(255,71,87,0.5) !important; }
 }
