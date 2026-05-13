@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MainLayoutComponent } from './main-layout.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { HotbarComponent } from '../hotbar/hotbar.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -29,7 +30,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [MainLayoutComponent, SidebarComponent, NavbarComponent],
+  declarations: [MainLayoutComponent, SidebarComponent, NavbarComponent, HotbarComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),

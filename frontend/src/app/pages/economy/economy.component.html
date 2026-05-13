@@ -7,25 +7,25 @@
     </div>
   </div>
 
-  <!-- KPI Row -->
+  <!-- KPI Row con iconos Minecraft reales -->
   <div class="kpi-row animate-fade-in-up delay-1">
     <div class="mg-card econ-kpi" style="--c:#ffd700">
-      <mat-icon class="kpi-icon" style="color:#ffd700">account_balance</mat-icon>
+      <img src="assets/items/gold_ingot.png" class="mc-item-icon" alt="gold" style="--delay:0s">
       <div class="kpi-val" style="color:#ffd700">{{ formatCurrency(stats.volumenTotal) }}</div>
       <div class="kpi-label">Volumen Total</div>
     </div>
     <div class="mg-card econ-kpi" style="--c:#00d4ff">
-      <mat-icon class="kpi-icon" style="color:#00d4ff">swap_horiz</mat-icon>
+      <img src="assets/items/paper.png" class="mc-item-icon" alt="paper" style="--delay:0.4s">
       <div class="kpi-val" style="color:#00d4ff">{{ formatNum(stats.totalTransacciones) }}</div>
       <div class="kpi-label">Transacciones</div>
     </div>
     <div class="mg-card econ-kpi" style="--c:#00ff88">
-      <mat-icon class="kpi-icon" style="color:#00ff88">trending_up</mat-icon>
+      <img src="assets/items/diamond.png" class="mc-item-icon" alt="diamond" style="--delay:0.8s">
       <div class="kpi-val" style="color:#00ff88">{{ formatCurrency(stats.transaccionPromedio) }}</div>
       <div class="kpi-label">Ticket Promedio</div>
     </div>
     <div class="mg-card econ-kpi" style="--c:#a855f7">
-      <mat-icon class="kpi-icon" style="color:#a855f7">storefront</mat-icon>
+      <img src="assets/items/emerald.png" class="mc-item-icon" alt="emerald" style="--delay:1.2s">
       <div class="kpi-val" style="color:#a855f7">{{ stats.volumenPorMercado ? stats.volumenPorMercado.length : 0 }}</div>
       <div class="kpi-label">Mercados Activos</div>
     </div>
@@ -75,10 +75,13 @@
     </div>
 
     <!-- Últimas Transacciones -->
-    <div class="mg-card table-section transactions-section">
+    <div class="mg-card table-section transactions-section" style="display:flex; flex-direction:column">
       <h3 class="section-h"><mat-icon style="color:#00d4ff">receipt_long</mat-icon> Últimas Transacciones</h3>
       <div class="tx-list">
         <div class="tx-item" *ngFor="let t of stats.ultimasTransacciones?.slice(0,20)">
+          <!-- Icono Minecraft del ítem -->
+          <img [src]="getItemIcon(t.itemNombre)" class="tx-item-icon" [alt]="t.itemNombre">
+
           <div class="tx-left">
             <span class="tx-tipo" [class]="getTipoClass(t.tipo)">{{ t.tipo }}</span>
             <div class="tx-players">

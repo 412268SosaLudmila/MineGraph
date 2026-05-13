@@ -6,6 +6,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { SharedModule } from './shared/shared.module';
+import { McWolfPetComponent } from './shared/mc-wolf-pet/mc-wolf-pet.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,7 +15,9 @@ import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule,
+    McWolfPetComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }

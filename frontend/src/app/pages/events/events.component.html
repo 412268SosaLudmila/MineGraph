@@ -17,12 +17,17 @@
 
   <!-- Active Events Banner -->
   <div class="active-banner animate-fade-in-up delay-1" *ngIf="activos.length">
-    <div class="banner-label"><mat-icon>radio_button_checked</mat-icon> EN CURSO</div>
-    <div class="active-events-scroll">
+    <div class="banner-header">
+      <span class="live-dot"></span>
+      <span class="banner-title">EN CURSO</span>
+      <span class="banner-count">{{ activos.length }}</span>
+    </div>
+    <div class="active-chips">
       <div class="active-event-chip" *ngFor="let e of activos"
            [style.--tipo-color]="getTipoColor(e.tipo)">
         <mat-icon [style.color]="getTipoColor(e.tipo)">{{ getTipoIcon(e.tipo) }}</mat-icon>
-        <span>{{ e.nombre }}</span>
+        <span class="chip-name">{{ e.nombre }}</span>
+        <span class="chip-sep">·</span>
         <span class="chip-region">{{ e.region }}</span>
         <span class="chip-reward">{{ formatReward(e.recompensa) }}</span>
       </div>

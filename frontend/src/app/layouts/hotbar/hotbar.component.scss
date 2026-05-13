@@ -1,0 +1,123 @@
+// ═══ Minecraft Hotbar ═══
+// Replica la barra de acceso rápido del inventario de Minecraft
+// Posición fija en la parte inferior central de la pantalla
+
+.mc-hotbar {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+
+  // Borde estilo GUI de Minecraft
+  background: rgba(20, 18, 32, 0.88);
+  border: 2px solid #555555;
+  outline: 2px solid #000000;
+  outline-offset: -4px;
+  box-shadow:
+    inset 1px 1px 0 rgba(255,255,255,0.18),
+    inset -1px -1px 0 rgba(0,0,0,0.6),
+    0 8px 40px rgba(0,0,0,0.7),
+    0 0 30px rgba(108,99,255,0.15);
+  backdrop-filter: blur(12px);
+}
+
+.mc-slot {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  // Slot inactivo — estilo ítem del inventario
+  background: rgba(138, 138, 138, 0.08);
+  border: 2px solid transparent;
+  border-top-color:  rgba(80,80,80,0.6);
+  border-left-color: rgba(80,80,80,0.6);
+  border-right-color: rgba(30,30,30,0.8);
+  border-bottom-color: rgba(30,30,30,0.8);
+
+  transition: all 0.1s ease;
+
+  .slot-icon {
+    font-size: 26px;
+    filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.7));
+    transition: transform 0.1s ease;
+    image-rendering: pixelated;
+  }
+
+  .slot-key {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-family: 'Minecraft', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1;
+  }
+
+  // Tooltip al hover
+  .slot-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(16, 0, 32, 0.95);
+    border: 1px solid #5a00aa;
+    outline: 1px solid #000;
+    outline-offset: -2px;
+    color: #fff;
+    font-family: 'Minecraft', 'Rajdhani', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-50%) translateY(4px);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+
+    // Triángulo puntero
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #5a00aa;
+    }
+  }
+
+  &:hover .slot-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  &:hover {
+    .slot-icon { transform: scale(1.12); }
+  }
+
+  // Slot ACTIVO — el ítem seleccionado con borde blanco (como en Minecraft)
+  &.active {
+    background: rgba(255,255,255,0.06);
+    border-top-color:  rgba(255,255,255,0.7);
+    border-left-color: rgba(255,255,255,0.7);
+    border-right-color: rgba(80,80,80,0.5);
+    border-bottom-color: rgba(80,80,80,0.5);
+    box-shadow:
+      inset 0 0 12px rgba(108,99,255,0.2),
+      0 0 16px rgba(108,99,255,0.3);
+
+    .slot-icon { filter: drop-shadow(0 0 6px rgba(200,180,255,0.8)) drop-shadow(1px 1px 0 rgba(0,0,0,0.7)); }
+    .slot-key  { color: rgba(255,255,255,0.7); }
+  }
+
+  // Press effect
+  &:active .slot-icon { transform: scale(0.9); }
+}

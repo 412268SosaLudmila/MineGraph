@@ -40,9 +40,40 @@
 
     <div class="nav-divider"></div>
 
+    <!-- Cursor Pet Selector -->
+    <div class="pet-selector" #petSelector>
+      <button class="pet-btn" (click)="showPetMenu = !showPetMenu"
+              [matTooltip]="'Cursor: ' + petSvc.mode">
+        <span class="pet-icon">{{ currentPetIcon }}</span>
+        <mat-icon style="font-size:14px; width:14px; height:14px; line-height:14px">expand_more</mat-icon>
+      </button>
+
+      <div class="pet-dropdown" *ngIf="showPetMenu">
+        <div class="pet-dropdown-title">Cursor Mascota</div>
+        <button class="pet-option"
+                *ngFor="let opt of petOptions"
+                [class.active]="petSvc.mode === opt.mode"
+                (click)="setPetMode(opt.mode)">
+          <span class="pet-opt-icon">{{ opt.icon }}</span>
+          <span class="pet-opt-label">{{ opt.label }}</span>
+          <mat-icon class="pet-check" *ngIf="petSvc.mode === opt.mode">check</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-divider"></div>
+
     <div class="user-menu" [matMenuTriggerFor]="userMenu">
-      <div class="user-avatar">
-        <span>{{ (auth.getCurrentUser()?.username || 'A')[0].toUpperCase() }}</span>
+      <div class="user-avatar" [class.has-img]="getUserAvatarUrl() && !avatarError">
+        <img
+          *ngIf="getUserAvatarUrl() && !avatarError"
+          [src]="getUserAvatarUrl()!"
+          class="user-avatar-img"
+          (error)="onAvatarError()"
+          alt="avatar">
+        <span *ngIf="!getUserAvatarUrl() || avatarError">
+          {{ (auth.getCurrentUser()?.username || 'A')[0].toUpperCase() }}
+        </span>
       </div>
       <div class="user-info">
         <span class="user-name">{{ auth.getCurrentUser()?.username || 'Admin' }}</span>

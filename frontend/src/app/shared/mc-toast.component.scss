@@ -1,0 +1,103 @@
+.mc-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+// Replica exacta del Achievement popup de Minecraft
+.mc-toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 330px;
+  padding: 10px 14px;
+  background: rgba(16, 12, 30, 0.97);
+  overflow: hidden;
+
+  // Borde estilo GUI de Minecraft: esquinas de 2px, con 4 colores
+  border: 2px solid;
+  border-color: var(--tc, #ffd700);
+  outline: 2px solid rgba(0, 0, 0, 0.8);
+  outline-offset: -4px;
+
+  // Sombra interior (inner border oscuro de Minecraft)
+  box-shadow:
+    inset 1px 1px 0 rgba(255,255,255,0.12),
+    inset -1px -1px 0 rgba(0,0,0,0.5),
+    0 8px 32px rgba(0,0,0,0.8),
+    0 0 20px color-mix(in srgb, var(--tc, #ffd700) 40%, transparent);
+
+  // Estado inicial — fuera de pantalla a la derecha
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              opacity 0.3s ease;
+
+  &.visible {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.mc-toast-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mc-toast-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px var(--tc, #ffd700));
+  animation: iconPop 0.4s ease 0.1s both;
+}
+
+.mc-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mc-toast-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--tc, #ffd700);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  opacity: 0.9;
+}
+
+.mc-toast-title {
+  font-family: 'Minecraft', 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+}
+
+.mc-toast-desc {
+  font-size: 11px;
+  color: #a0a0a0;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@keyframes iconPop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

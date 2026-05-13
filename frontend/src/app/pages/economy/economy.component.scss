@@ -3,31 +3,94 @@
 
 .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .econ-kpi {
-  padding: 22px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden;
+  padding: 22px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden;
   &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--c, #ffd700); }
-  .kpi-icon { font-size: 28px; margin-bottom: 4px; }
-  .kpi-val { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700; line-height: 1; }
+
+  .kpi-val   { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 700; line-height: 1; }
   .kpi-label { font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+}
+
+// Icono de ítem Minecraft — flotación suave estilo "ítem flotante"
+.mc-item-icon {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter:
+    drop-shadow(0 0 8px var(--c, #ffd700))
+    drop-shadow(2px 2px 0 rgba(0,0,0,0.6));
+  animation: mcItemFloat 2.4s ease-in-out var(--delay, 0s) infinite;
+}
+
+// Animación de ítem flotante — igual al ítem en el suelo de Minecraft
+@keyframes mcItemFloat {
+  0%,100% { transform: translateY(0px)   rotate(-3deg) scale(1);    }
+  25%     { transform: translateY(-6px)  rotate(0deg)  scale(1.05); }
+  50%     { transform: translateY(-10px) rotate(3deg)  scale(1.08); }
+  75%     { transform: translateY(-6px)  rotate(0deg)  scale(1.05); }
 }
 
 .charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
 .chart-card { padding: 18px; }
 .chart-title { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 8px; mat-icon { font-size: 17px; } }
 
-.tables-row { display: grid; grid-template-columns: 380px 1fr; gap: 20px; }
+.tables-row {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  align-items: stretch;  // ambas cards igual de altas
+}
+
 .table-section { padding: 18px; }
-.transactions-section { padding: 18px; }
+
+.transactions-section {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .section-h { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; mat-icon { font-size: 17px; } }
 
 .vendor-nick { font-size: 13px; font-weight: 600; color: #e2e8f0; }
 .ventas-val { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--mg-primary); }
 .income-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #ffd700; font-weight: 600; }
 
-.tx-list { display: flex; flex-direction: column; gap: 0; max-height: 400px; overflow-y: auto; }
+.tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;           // ocupa todo el espacio disponible en la card
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  min-height: 0;     // necesario para que flex: 1 + overflow funcionen juntos
+
+  // Scrollbar delgado estilo app
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 99, 255, 0.4) transparent;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(108, 99, 255, 0.4);
+    border-radius: 2px;
+    &:hover { background: rgba(108, 99, 255, 0.7); }
+  }
+}
 .tx-item {
-  display: flex; align-items: center; gap: 12px; padding: 9px 4px; border-bottom: 1px solid rgba(255,255,255,0.04);
-  &:hover { background: rgba(255,215,0,0.03); border-radius: 6px; }
+  display: flex; align-items: center; gap: 12px; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  &:hover { background: rgba(255,215,0,0.04); border-radius: 6px; padding: 8px 6px; margin: 0 -2px; }
   &:last-child { border-bottom: none; }
+}
+
+// Icono Minecraft del ítem en la transacción
+.tx-item-icon {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  flex-shrink: 0;
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.6));
 }
 .tx-left { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
 .tx-tipo { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; letter-spacing: 0.5px; width: fit-content; }

@@ -6,6 +6,8 @@ import { Jugador } from '../../core/models/jugador.model';
 import { JugadorService } from '../../core/services/jugador.service';
 import { ClanService } from '../../core/services/clan.service';
 import { Clan } from '../../core/models/clan.model';
+import { McToastService } from '../../shared/mc-toast.service';
+import { McXpService } from '../../shared/mc-xp.service';
 
 @Component({
   selector: 'mg-players',
@@ -40,7 +42,12 @@ export class PlayersComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private jugadorService: JugadorService, private clanService: ClanService) {}
+  constructor(
+    private jugadorService: JugadorService,
+    private clanService: ClanService,
+    private toast: McToastService,
+    private xp: McXpService
+  ) {}
 
   ngOnInit(): void {
     this.loadAll();
@@ -129,23 +136,40 @@ export class PlayersComponent implements OnInit {
     this.showModal = true;
   }
 
-  saveJugador(): void {
+  saveJugador(event?: MouseEvent): void {
     if (!this.form.nickname?.trim()) return;
     this.saving = true;
-    const obs = this.editMode && this.selectedJugador
-      ? this.jugadorService.update(this.selectedJugador.id!, this.form)
+    const isNew = !(this.editMode && this.selectedJugador);
+    const obs = !isNew
+      ? this.jugadorService.update(this.selectedJugador!.id!, this.form)
       : this.jugadorService.create(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.saving = false; this.loadAll(); },
-      error: () => { this.saving = false; }
+      next: () => {
+        this.showModal = false;
+        this.saving = false;
+        this.loadAll();
+        if (event) this.xp.burst(event);
+        if (isNew) {
+          this.toast.achievement('¡Nuevo Jugador!', `${this.form.nickname} se unió al servidor`);
+        } else {
+          this.toast.success('Jugador Actualizado', `${this.form.nickname} fue modificado`);
+        }
+      },
+      error: () => {
+        this.saving = false;
+        this.toast.error('Error', 'No se pudo guardar el jugador');
+      }
     });
   }
 
   deleteJugador(j: Jugador, event: Event): void {
     event.stopPropagation();
     if (!confirm(`¿Eliminar a ${j.nickname}? Esta acción no se puede deshacer.`)) return;
-    this.jugadorService.delete(j.id!).subscribe(() => this.loadAll());
+    this.jugadorService.delete(j.id!).subscribe(() => {
+      this.loadAll();
+      this.toast.info('Jugador Eliminado', `${j.nickname} abandonó el servidor`);
+    });
   }
 
   // ─── Modal Relaciones ────────────────────────────────────────────────────
@@ -195,5 +219,19 @@ export class PlayersComponent implements OnInit {
     if (r > 500) return 'rep-legendary'; if (r > 200) return 'rep-high';
     if (r > 0) return 'rep-mid'; if (r < -100) return 'rep-negative';
     return 'rep-neutral';
+  }
+
+  // ─── Barras de vida estilo Minecraft ──────────────────────────────────────
+  // Devuelve array de 5 estados: 'full' | 'half' | 'empty'
+  getHearts(rep: number): ('full' | 'half' | 'empty')[] {
+    const MAX = 5;
+    // Mapeo: rep -200..1000 → 0..10 medios corazones
+    const halves = Math.max(0, Math.min(MAX * 2, Math.round(((rep + 200) / 1200) * MAX * 2)));
+    return Array.from({ length: MAX }, (_, i) => {
+      const pos = i * 2;
+      if (halves >= pos + 2) return 'full';
+      if (halves >= pos + 1) return 'half';
+      return 'empty';
+    });
   }
 }

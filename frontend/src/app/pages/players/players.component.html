@@ -123,11 +123,18 @@
         <td mat-cell *matCellDef="let j"><span class="coins-val">{{ formatNum(j.monedas) }} ⬡</span></td>
       </ng-container>
 
-      <!-- Reputación -->
+      <!-- Reputación con hearts estilo Minecraft -->
       <ng-container matColumnDef="reputacion">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Reputación</th>
         <td mat-cell *matCellDef="let j">
-          <span class="rep-val" [class]="getReputacionClass(j.reputacion)">{{ j.reputacion }}</span>
+          <div class="rep-cell">
+            <div class="mc-hearts">
+              <span *ngFor="let h of getHearts(j.reputacion)" class="mc-heart" [class.empty]="h==='empty'" [class.half]="h==='half'">
+                {{ h === 'empty' ? '🖤' : h === 'half' ? '🧡' : '❤️' }}
+              </span>
+            </div>
+            <span class="rep-val" [class]="getReputacionClass(j.reputacion)">{{ j.reputacion }}</span>
+          </div>
         </td>
       </ng-container>
 
@@ -221,7 +228,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" (click)="showModal=false">Cancelar</button>
-      <button class="btn-primary" (click)="saveJugador()" [disabled]="saving">
+      <button class="btn-primary" (click)="saveJugador($event)" [disabled]="saving">
         <mat-icon>{{ saving ? 'hourglass_empty' : 'save' }}</mat-icon>
         {{ saving ? 'Guardando...' : 'Guardar' }}
       </button>

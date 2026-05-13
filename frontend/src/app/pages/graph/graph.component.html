@@ -95,7 +95,7 @@
       <!-- Selected Node Info -->
       <div class="control-section node-info" *ngIf="selectedNode">
         <label class="control-label">Nodo Seleccionado</label>
-        <div class="node-detail-card">
+        <div class="node-detail-card" [class.isolated-card]="isolatedNodeId === selectedNode.id">
           <div class="node-detail-avatar"
                [style.background]="selectedNode.online ? '#6c63ff' : '#1a1a2e'">
             {{ selectedNode.label.substring(0,2).toUpperCase() }}
@@ -115,6 +115,35 @@
             </div>
           </div>
         </div>
+
+        <!-- Isolation stats (shown when isolated) -->
+        <div class="isolation-stats" *ngIf="isolatedNodeId === selectedNode.id">
+          <div class="iso-stat">
+            <span class="iso-stat-val">{{ isolatedNeighborCount }}</span>
+            <span class="iso-stat-label">Vecinos</span>
+          </div>
+          <div class="iso-stat-div"></div>
+          <div class="iso-stat">
+            <span class="iso-stat-val">{{ isolatedEdgeCount }}</span>
+            <span class="iso-stat-label">Conexiones</span>
+          </div>
+        </div>
+
+        <!-- Isolate / Clear buttons -->
+        <div class="isolation-actions">
+          <button class="isolate-btn"
+                  *ngIf="isolatedNodeId !== selectedNode.id"
+                  (click)="isolateNode(selectedNode.id)">
+            <mat-icon>hub</mat-icon>
+            Aislar jugador
+          </button>
+          <button class="isolate-btn active"
+                  *ngIf="isolatedNodeId === selectedNode.id"
+                  (click)="clearIsolation()">
+            <mat-icon>account_tree</mat-icon>
+            Ver grafo completo
+          </button>
+        </div>
       </div>
     </div>
 
@@ -126,6 +155,19 @@
         <p>Cargando grafo desde Neo4j...</p>
       </div>
       <div #networkContainer class="network-canvas" [style.display]="loading ? 'none' : 'block'"></div>
+
+      <!-- Isolation mode banner -->
+      <div class="isolation-banner" *ngIf="isolatedNodeId && selectedNode">
+        <mat-icon class="iso-banner-icon">hub</mat-icon>
+        <span class="iso-banner-text">
+          Aislando: <strong>{{ selectedNode.label }}</strong>
+          &nbsp;·&nbsp;
+          <span class="iso-banner-count">{{ isolatedNeighborCount }} vecinos · {{ isolatedEdgeCount }} conexiones</span>
+        </span>
+        <button class="iso-banner-close" (click)="clearIsolation()" matTooltip="Volver al grafo completo">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
 
       <!-- Floating controls -->
       <div class="floating-controls" *ngIf="!loading">

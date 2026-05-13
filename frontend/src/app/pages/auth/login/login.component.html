@@ -1,11 +1,8 @@
 <div class="login-page">
-  <!-- Animated background -->
-  <div class="bg-grid"></div>
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
-  <div class="bg-particles">
-    <span *ngFor="let p of [1,2,3,4,5,6,7,8,9,10,11,12]" class="particle"></span>
-  </div>
+  <!-- Nether Portal Canvas — animación pixel-art igual al portal in-game -->
+  <canvas #netherCanvas class="nether-canvas"></canvas>
+  <div class="nether-vignette"></div>
+  <div class="nether-scanlines"></div>
 
   <div class="login-container animate-fade-in-up">
     <!-- Logo -->

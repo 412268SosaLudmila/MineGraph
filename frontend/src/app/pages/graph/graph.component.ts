@@ -30,6 +30,11 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
   totalEdges = 0;
   onlineNodes = 0;
 
+  // Isolation mode
+  isolatedNodeId: string | null = null;
+  isolatedNeighborCount = 0;
+  isolatedEdgeCount = 0;
+
   constructor(private jugadorService: JugadorService) {}
 
   ngOnInit(): void {
@@ -48,6 +53,20 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {}
 
+  // ─── Avatar Minecraft para nodos del grafo ───────────────────────────────
+  private readonly MC_AVATARS = [
+    'assets/avatars/steve.png',    'assets/avatars/alex.png',
+    'assets/avatars/villager.png', 'assets/avatars/enderman.png',
+    'assets/avatars/creeper.png',  'assets/avatars/skeleton.png',
+    'assets/avatars/zombie.png',   'assets/avatars/blaze.png',
+  ];
+
+  private getAvatarForNode(nickname: string): string {
+    let h = 0;
+    for (const c of nickname) h = c.charCodeAt(0) + ((h << 5) - h);
+    return this.MC_AVATARS[Math.abs(h) % this.MC_AVATARS.length];
+  }
+
   private initNetwork(data: GrafoData): void {
     if (!this.networkContainer?.nativeElement) return;
 
@@ -56,7 +75,10 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         id: n.id,
         label: n.label,
         title: this.buildTooltip(n),
-        size: n.size || 18,
+        // Usar imagen de skin Minecraft como nodo
+        shape: 'circularImage',
+        image: this.getAvatarForNode(n.label),
+        size: (n.size || 18) + 4,
         color: {
           background: n.online ? this.getNodeColor(n) : '#22243a',
           border: this.getNodeColor(n),
@@ -70,10 +92,12 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
           strokeWidth: 2,
           strokeColor: '#08090f'
         },
-        borderWidth: n.online ? 2.5 : 1.5,
-        borderWidthSelected: 4,
-        shadow: n.online ? { enabled: true, color: this.getNodeColor(n) + '55', size: 14, x: 0, y: 0 } : false,
-        group: n.clan || 'Sin Clan'
+        borderWidth: n.online ? 3 : 1.5,
+        borderWidthSelected: 5,
+        shadow: n.online ? { enabled: true, color: this.getNodeColor(n) + '66', size: 16, x: 0, y: 0 } : false,
+        group: n.clan || 'Sin Clan',
+        // Opacidad reducida para offline
+        opacity: n.online ? 1 : 0.55
       }))
     );
 
@@ -140,7 +164,19 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
         const node = data.nodes.find(n => n.id === nodeId.toString());
         this.selectedNode = node || null;
       } else {
-        this.selectedNode = null;
+        // Click en fondo vacío → salir de aislamiento si estaba activo
+        if (this.isolatedNodeId) {
+          this.clearIsolation();
+        } else {
+          this.selectedNode = null;
+        }
+      }
+    });
+
+    this.network.on('doubleClick', (params: any) => {
+      if (params.nodes.length > 0) {
+        const nodeId = params.nodes[0].toString();
+        this.isolateNode(nodeId);
       }
     });
   }
@@ -182,14 +218,127 @@ export class GraphComponent implements OnInit, AfterViewInit, OnDestroy {
     return colors[Math.abs(h) % colors.length];
   }
 
+  /** Aísla un nodo: muestra solo él y sus vecinos directos */
+  isolateNode(nodeId: string): void {
+    if (!this.visData || !this.grafoData) return;
+
+    this.isolatedNodeId = nodeId;
+
+    // Encontrar aristas conectadas al nodo (respetando filtros activos)
+    const connectedEdges = this.grafoData.edges.filter(e => {
+      if (e.tipo === 'AMIGO_DE'     && !this.showFriends) return false;
+      if (e.tipo === 'ENEMIGO_DE'   && !this.showEnemies) return false;
+      if (e.tipo === 'COMERCIA_CON' && !this.showTrade)   return false;
+      return e.from.toString() === nodeId || e.to.toString() === nodeId;
+    });
+
+    // Vecinos directos
+    const neighborIds = new Set<string>();
+    connectedEdges.forEach(e => {
+      neighborIds.add(e.from.toString());
+      neighborIds.add(e.to.toString());
+    });
+    neighborIds.delete(nodeId);
+
+    this.isolatedNeighborCount = neighborIds.size;
+    this.isolatedEdgeCount     = connectedEdges.length;
+
+    // Actualizar opacidad de nodos
+    const nodeUpdates = this.grafoData.nodes.map(n => {
+      const id  = n.id.toString();
+      const dim = id !== nodeId && !neighborIds.has(id);
+      return {
+        id,
+        opacity: dim ? 0.06 : 1,
+        font: {
+          color: dim ? 'transparent' : (n.online ? '#e2e8f0' : '#4a5568'),
+          size: id === nodeId ? 14 : 11,
+          face: 'Rajdhani',
+          strokeWidth: 2,
+          strokeColor: '#08090f'
+        },
+        borderWidth: id === nodeId ? 5 : (n.online ? 3 : 1.5),
+        shadow: id === nodeId
+          ? { enabled: true, color: this.getNodeColor(n) + 'cc', size: 24, x: 0, y: 0 }
+          : (neighborIds.has(id) && n.online
+              ? { enabled: true, color: this.getNodeColor(n) + '66', size: 12, x: 0, y: 0 }
+              : false)
+      };
+    });
+    this.visData.nodes.update(nodeUpdates);
+
+    // Actualizar aristas: dimear las que no pertenecen al nodo
+    const connectedEdgeIds = new Set(connectedEdges.map(e => e.id.toString()));
+    const edgeUpdates = this.grafoData.edges.map(e => ({
+      id: e.id,
+      hidden: !connectedEdgeIds.has(e.id.toString()),
+      width:  connectedEdgeIds.has(e.id.toString()) ? (e.width || 1.5) * 1.8 : (e.width || 1.2),
+      color:  connectedEdgeIds.has(e.id.toString())
+        ? { color: e.color, highlight: e.color, hover: e.color, opacity: 1 }
+        : { color: e.color + '15',  highlight: e.color, hover: e.color, opacity: 0.08 }
+    }));
+    this.visData.edges.update(edgeUpdates);
+
+    // Foco suave sobre el nodo
+    this.network?.focus(nodeId, {
+      scale: 1.4,
+      animation: { duration: 700, easingFunction: 'easeInOutQuad' }
+    });
+
+    // Seleccionarlo visualmente
+    this.network?.selectNodes([nodeId]);
+
+    // Actualizar panel lateral
+    const node = this.grafoData.nodes.find(n => n.id.toString() === nodeId);
+    this.selectedNode = node || null;
+  }
+
+  /** Vuelve al grafo completo */
+  clearIsolation(): void {
+    if (!this.visData || !this.grafoData) return;
+
+    this.isolatedNodeId = null;
+
+    // Restaurar todos los nodos a su estado original
+    const nodeRestores = this.grafoData.nodes.map(n => ({
+      id: n.id,
+      opacity: n.online ? 1 : 0.55,
+      font: {
+        color: n.online ? '#e2e8f0' : '#4a5568',
+        size: 11,
+        face: 'Rajdhani',
+        strokeWidth: 2,
+        strokeColor: '#08090f'
+      },
+      borderWidth: n.online ? 3 : 1.5,
+      shadow: n.online
+        ? { enabled: true, color: this.getNodeColor(n) + '66', size: 16, x: 0, y: 0 }
+        : false
+    }));
+    this.visData.nodes.update(nodeRestores);
+
+    // Restaurar aristas según filtros activos
+    this.applyFilters();
+
+    this.network?.fit({ animation: { duration: 700, easingFunction: 'easeInOutQuad' } });
+  }
+
   applyFilters(): void {
     if (!this.visData || !this.grafoData) return;
+
+    // Si hay aislamiento activo, re-aislar (respeta los nuevos filtros)
+    if (this.isolatedNodeId) {
+      this.isolateNode(this.isolatedNodeId);
+      return;
+    }
+
     const filteredEdges = this.grafoData.edges.filter(e => {
-      if (e.tipo === 'AMIGO_DE' && !this.showFriends) return false;
-      if (e.tipo === 'ENEMIGO_DE' && !this.showEnemies) return false;
-      if (e.tipo === 'COMERCIA_CON' && !this.showTrade) return false;
+      if (e.tipo === 'AMIGO_DE'     && !this.showFriends) return false;
+      if (e.tipo === 'ENEMIGO_DE'   && !this.showEnemies) return false;
+      if (e.tipo === 'COMERCIA_CON' && !this.showTrade)   return false;
       return true;
     });
+
     this.visData.edges.clear();
     this.visData.edges.add(filteredEdges.map(e => ({
       id: e.id, from: e.from, to: e.to,

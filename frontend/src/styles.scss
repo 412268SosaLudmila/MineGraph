@@ -1,4 +1,4 @@
-@import 'tailwindcss/base';
+﻿@import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
@@ -40,6 +40,129 @@ body {
   background: var(--mg-dark);
   color: var(--mg-text);
   -webkit-font-smoothing: antialiased;
+}
+
+// ─── MC Item Tooltip (clase .mc-tip) ───
+// Envolver el elemento con <span class="mc-tip" data-tip="texto del tooltip">
+.mc-tip {
+  position: relative;
+
+  &::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: rgba(16, 0, 32, 0.97);
+    color: #fff;
+    font-family: 'Minecraft', 'Rajdhani', sans-serif;
+    font-size: 12px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 9000;
+    // Borde de tooltip de inventario Minecraft
+    border-top:    2px solid #5a00aa;
+    border-left:   2px solid #5a00aa;
+    border-right:  2px solid #1a0044;
+    border-bottom: 2px solid #1a0044;
+    box-shadow: 2px 2px 0 #000, inset 1px 1px 0 rgba(200,100,255,0.1);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// ─── Minecraft Loading Bar (reemplaza el spinner) ───
+.mc-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+
+  .mc-loading-icon {
+    font-size: 40px;
+    animation: mcLoadingBounce 0.8s ease-in-out infinite;
+  }
+
+  .mc-loading-bar-wrap {
+    width: 200px;
+    height: 16px;
+    background: #1a1a2e;
+    border: 2px solid #444;
+    outline: 2px solid #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mc-loading-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5500aa, #9922ee);
+    animation: mcLoadingBar 1.4s ease-in-out infinite;
+  }
+
+  .mc-loading-text {
+    font-family: 'Minecraft', 'Rajdhani', monospace;
+    font-size: 13px;
+    color: #a78bfa;
+    letter-spacing: 1px;
+    animation: mcDots 1.4s steps(4, end) infinite;
+  }
+}
+
+@keyframes mcLoadingBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes mcLoadingBar {
+  0%   { width: 5%; }
+  50%  { width: 75%; }
+  100% { width: 5%; }
+}
+
+@keyframes mcDots {
+  0%   { content: 'Cargando'; }
+  33%  { content: 'Cargando.'; }
+  66%  { content: 'Cargando..'; }
+  100% { content: 'Cargando...'; }
+}
+
+// ─── MC Hearts (barras de vida estilo Minecraft) ───
+.mc-hearts {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+
+  .mc-heart {
+    font-size: 10px;
+    line-height: 1;
+    filter: drop-shadow(0 0 2px rgba(255,0,0,0.5));
+
+    &.empty  { filter: grayscale(1) opacity(0.4); }
+    &.half   { filter: saturate(0.5) opacity(0.7); }
+  }
+}
+
+// ─── Coin spin animation (economía) ───
+@keyframes coinSpin {
+  0%   { transform: rotateY(0deg)   scaleX(1); }
+  25%  { transform: rotateY(45deg)  scaleX(0.6); }
+  50%  { transform: rotateY(90deg)  scaleX(0.1); }
+  75%  { transform: rotateY(135deg) scaleX(0.6); }
+  100% { transform: rotateY(180deg) scaleX(1); }
+}
+
+.mc-coin-spin {
+  display: inline-block;
+  animation: coinSpin 1.4s linear infinite;
+  transform-origin: center;
 }
 
 // ===== SCROLLBAR =====
@@ -694,3 +817,4 @@ select.mg-input option {
   border: none !important;
   &:hover { box-shadow: 0 0 20px rgba(255,71,87,0.5) !important; }
 }
+

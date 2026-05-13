@@ -23,3 +23,76 @@
               radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.04) 0%, transparent 60%),
               #08090f;
 }
+
+// ═══ Minecraft Bossbar ═══
+// Igual al Bossbar de Minecraft: nombre del "jefe" + barra con muescas + %
+
+.mc-bossbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 20px;
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  .bossbar-name {
+    font-family: 'Minecraft', 'Rajdhani', sans-serif;
+    font-size: 11px;
+    color: #e2d4ff;
+    white-space: nowrap;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+    min-width: 220px;
+    letter-spacing: 0.5px;
+  }
+
+  .bossbar-track {
+    flex: 1;
+    height: 8px;
+    background: #1a1a2e;
+    border: 1px solid #333;
+    outline: 1px solid #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bossbar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5500aa, #9922ee, #7700cc);
+    transition: width 1.2s ease;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.2) 3px,
+        rgba(0,0,0,0.2) 4px
+      );
+    }
+  }
+
+  // Las muescas del bossbar de Minecraft (separaciones verticales)
+  .bossbar-notches {
+    position: absolute;
+    inset: 0;
+    display: flex;
+
+    span {
+      flex: 1;
+      border-right: 1px solid rgba(0,0,0,0.3);
+      &:last-child { border-right: none; }
+    }
+  }
+
+  .bossbar-pct {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: #a78bfa;
+    min-width: 36px;
+    text-align: right;
+  }
+}

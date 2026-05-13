@@ -1,0 +1,18 @@
+<div class="mc-hotbar">
+  <div
+    *ngFor="let slot of slots"
+    class="mc-slot"
+    [class.active]="isActive(slot.route)"
+    (click)="navigate(slot.route)"
+    [title]="slot.label">
+
+    <!-- Número de slot (tecla 1-9 en Minecraft) -->
+    <span class="slot-key">{{ slot.key }}</span>
+
+    <!-- Icono del ítem -->
+    <span class="slot-icon">{{ slot.icon }}</span>
+
+    <!-- Tooltip al hover -->
+    <div class="slot-tooltip">{{ slot.label }}</div>
+  </div>
+</div>

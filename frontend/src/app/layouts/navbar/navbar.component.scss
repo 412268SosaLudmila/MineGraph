@@ -204,6 +204,84 @@
   }
 }
 
+// ─── Cursor Pet Selector ────────────────────────────────────────────────────
+.pet-selector {
+  position: relative;
+}
+
+.pet-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 36px;
+  cursor: pointer;
+  color: #718096;
+  transition: all 0.2s;
+
+  .pet-icon { font-size: 18px; line-height: 1; }
+
+  &:hover {
+    background: rgba(108,99,255,0.12);
+    border-color: rgba(108,99,255,0.3);
+    color: var(--mg-primary);
+  }
+}
+
+.pet-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #0f1120;
+  border: 1px solid rgba(108,99,255,0.25);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 160px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: dropIn 0.15s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pet-dropdown-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #4a5568;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 4px;
+}
+
+.pet-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.15s;
+
+  .pet-opt-icon { font-size: 16px; }
+  .pet-opt-label { font-size: 13px; font-weight: 600; flex: 1; text-align: left; }
+  .pet-check { font-size: 16px; color: var(--mg-primary); }
+
+  &:hover { background: rgba(108,99,255,0.1); color: #e2e8f0; }
+  &.active { background: rgba(108,99,255,0.12); color: #e2e8f0; border: 1px solid rgba(108,99,255,0.2); }
+}
+
 .user-menu {
   display: flex;
   align-items: center;
@@ -221,8 +299,8 @@
   }
 
   .user-avatar {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     background: linear-gradient(135deg, #6c63ff, #00d4ff);
     border-radius: 7px;
     display: flex;
@@ -233,6 +311,20 @@
     font-weight: 700;
     color: white;
     flex-shrink: 0;
+    overflow: hidden;
+
+    // Cuando tiene imagen: sin gradiente de fondo
+    &.has-img { background: transparent; }
+
+    .user-avatar-img {
+      width: 34px;
+      height: 34px;
+      object-fit: cover;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border-radius: 7px;
+      display: block;
+    }
   }
 
   .user-info {

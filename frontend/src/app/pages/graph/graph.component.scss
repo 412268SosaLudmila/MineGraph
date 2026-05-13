@@ -55,3 +55,163 @@
   &:hover { background: rgba(108,99,255,0.2); box-shadow: 0 0 12px rgba(108,99,255,0.3); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ─── Isolation ───────────────────────────────────────────────────────────────
+
+.isolated-card {
+  border-color: rgba(108, 99, 255, 0.5) !important;
+  box-shadow: 0 0 12px rgba(108, 99, 255, 0.2);
+}
+
+.isolation-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 10px 0 4px;
+  background: rgba(108, 99, 255, 0.08);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+
+  .iso-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .iso-stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #6c63ff;
+  }
+
+  .iso-stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #4a5568;
+  }
+
+  .iso-stat-div {
+    width: 1px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
+.isolation-actions {
+  margin-top: 8px;
+
+  .isolate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 9px 12px;
+    background: rgba(108, 99, 255, 0.12);
+    border: 1px solid rgba(108, 99, 255, 0.35);
+    border-radius: 8px;
+    color: var(--mg-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+
+    mat-icon { font-size: 17px; width: 17px; height: 17px; }
+
+    &:hover {
+      background: rgba(108, 99, 255, 0.25);
+      border-color: rgba(108, 99, 255, 0.6);
+      box-shadow: 0 0 12px rgba(108, 99, 255, 0.25);
+    }
+
+    &.active {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: rgba(0, 212, 255, 0.4);
+      color: var(--mg-secondary);
+
+      &:hover {
+        background: rgba(0, 212, 255, 0.2);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+      }
+    }
+  }
+}
+
+// ─── Isolation banner (floating inside canvas) ───────────────────────────────
+
+.isolation-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 11, 20, 0.92);
+  border: 1px solid rgba(108, 99, 255, 0.45);
+  border-radius: 24px;
+  padding: 8px 16px 8px 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(108, 99, 255, 0.2), 0 0 0 1px rgba(108, 99, 255, 0.1);
+  z-index: 10;
+  animation: bannerSlideIn 0.3s ease;
+  white-space: nowrap;
+
+  .iso-banner-icon {
+    font-size: 17px;
+    color: var(--mg-primary);
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+  }
+
+  .iso-banner-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    color: #e2e8f0;
+
+    strong { color: white; }
+
+    .iso-banner-count {
+      color: #718096;
+      font-size: 12px;
+    }
+  }
+
+  .iso-banner-close {
+    width: 26px;
+    height: 26px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-left: 4px;
+
+    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+
+    &:hover {
+      background: rgba(255, 71, 87, 0.15);
+      border-color: rgba(255, 71, 87, 0.4);
+      color: #ff4757;
+    }
+  }
+}
+
+@keyframes bannerSlideIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

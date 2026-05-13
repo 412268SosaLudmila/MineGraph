@@ -105,4 +105,56 @@ export class EconomyComponent implements OnInit {
     const m: Record<string, string> = { 'VENTA': 'tipo-venta', 'COMPRA': 'tipo-compra', 'SUBASTA': 'tipo-subasta', 'INTERCAMBIO': 'tipo-intercambio' };
     return m[tipo] || '';
   }
+
+  // ─── Mapa de palabras clave → textura Minecraft ───────────────────────────
+  private readonly ITEM_ICONS: { keywords: string[]; icon: string }[] = [
+    { keywords: ['libro','encantado'],       icon: 'enchanted_book' },
+    { keywords: ['libro'],                   icon: 'book' },
+    { keywords: ['poción','pocion','velocidad','fuerza','salud','veneno','invisibilidad'], icon: 'potion' },
+    { keywords: ['arco encantado'],          icon: 'bow' },
+    { keywords: ['arco'],                    icon: 'bow' },
+    { keywords: ['ballesta'],                icon: 'crossbow' },
+    { keywords: ['tridente'],                icon: 'trident' },
+    { keywords: ['espada diamante','espada de diamante'], icon: 'diamond_sword' },
+    { keywords: ['espada'],                  icon: 'iron_sword' },
+    { keywords: ['pico diamante','pico de diamante'],    icon: 'diamond_pickaxe' },
+    { keywords: ['pico'],                    icon: 'iron_pickaxe' },
+    { keywords: ['hacha diamante','hacha de diamante'],  icon: 'diamond_axe' },
+    { keywords: ['hacha'],                   icon: 'iron_axe' },
+    { keywords: ['manzana dorada'],          icon: 'golden_apple' },
+    { keywords: ['manzana'],                 icon: 'apple' },
+    { keywords: ['pan'],                     icon: 'bread' },
+    { keywords: ['carne','bistec','filete'], icon: 'cooked_beef' },
+    { keywords: ['tocón','tronco','madera'], icon: 'oak_log' },
+    { keywords: ['tabla','plancha'],         icon: 'oak_planks' },
+    { keywords: ['lingote','hierro'],        icon: 'iron_ingot' },
+    { keywords: ['lingote oro','oro'],       icon: 'gold_ingot' },
+    { keywords: ['diamante'],                icon: 'diamond' },
+    { keywords: ['esmeralda'],               icon: 'emerald' },
+    { keywords: ['flecha'],                  icon: 'arrow' },
+    { keywords: ['hueso'],                   icon: 'bone' },
+    { keywords: ['pluma'],                   icon: 'feather' },
+    { keywords: ['perla','ender'],           icon: 'ender_pearl' },
+    { keywords: ['estrella'],                icon: 'nether_star' },
+    { keywords: ['tótem','totem'],           icon: 'totem_of_undying' },
+    { keywords: ['palo','blaze'],            icon: 'blaze_rod' },
+    { keywords: ['caña','pesca'],            icon: 'fishing_rod' },
+    { keywords: ['cuero','cuero'],           icon: 'leather' },
+    { keywords: ['eslabón','pedernal'],      icon: 'flint_and_steel' },
+    { keywords: ['cofre'],                   icon: 'chest' },
+    { keywords: ['cubo','balde'],            icon: 'bucket' },
+    { keywords: ['mapa'],                    icon: 'map' },
+    { keywords: ['brújula'],                 icon: 'compass' },
+    { keywords: ['reloj'],                   icon: 'clock' },
+  ];
+
+  getItemIcon(nombre: string): string {
+    const lower = (nombre || '').toLowerCase();
+    for (const entry of this.ITEM_ICONS) {
+      if (entry.keywords.some(kw => lower.includes(kw))) {
+        return `assets/items/${entry.icon}.png`;
+      }
+    }
+    return 'assets/items/book.png'; // fallback
+  }
 }
